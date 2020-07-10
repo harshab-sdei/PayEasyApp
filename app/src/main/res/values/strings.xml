@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Peazy</string>
+    <string name="mainactivity_title">Join to Peazy</string>
+    <string name="login">Log in</string>
+    <string name="or">or</string>
+    <string name="create_acc">Create new account</string>
+    <string name="terms_msg"><![CDATA[By Continuing, you agree to our<\br><b>Terms</b> and <b>Privacy Policy</b>]]></string>
+
+    <string name="loginactivity_title">Log in to Peazy</string>
+    <string name="email_msg">Email address</string>
+    <string name="pws_msg">Password</string>
+    <string name="forgotpws">Forgot Password?</string>
+
+    <string name="SignUpactivity_title">Welcome to Peazy</string>
+    <string name="signup">Sign Up</string>
+
+</resources>
