@@ -1,11 +1,9 @@
-package com.example.peazy.models.modelview.login
+package com.example.peazy.controllers.login
 
-import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
-import com.google.android.material.textfield.TextInputLayout
 
 
 class LoginModelView(email: String,pws: String): ViewModel() {
@@ -13,6 +11,7 @@ class LoginModelView(email: String,pws: String): ViewModel() {
     var error_pws = MutableLiveData<String>()
     var email = MutableLiveData<String>()
     var pws=MutableLiveData<String>()
+    var isvalid=false
 
     init {
      //   error_email.value="Required"
@@ -34,7 +33,28 @@ class LoginModelView(email: String,pws: String): ViewModel() {
 
     }
 
+    fun checkEmailValid() {
+        if (!AppUtility.getInstance().isEmailValid(email.value.toString())) {
+            isvalid=false
+            error_email.value = Constants.email_error
 
+        }else
+            isvalid=true
+    }
+
+    fun checkPasswordValid() {
+        var msg = AppUtility.getInstance().isPasswordValid(pws.value.toString())
+        if (!msg.isEmpty()) {
+            isvalid=false
+            error_pws.value = msg
+        }else
+            isvalid=true
+    }
+
+    fun isvalidate():Boolean
+    {
+        return isvalid
+    }
 
 
 }

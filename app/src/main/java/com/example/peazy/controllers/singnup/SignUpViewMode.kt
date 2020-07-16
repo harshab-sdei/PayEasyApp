@@ -1,4 +1,4 @@
-package com.example.peazy.models.modelview.signup
+package com.example.peazy.controllers.singnup
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,25 +12,41 @@ class SignUpViewMode/*(private val mainRepository: MainRepository)*/:ViewModel()
     var email = MutableLiveData<String>()
     var pws = MutableLiveData<String>()
     var person_name = MutableLiveData<String>()
+    var isvalid=false
 
-
-    fun checkValidation() {
+    fun checkvalidateLetters() {
 
         if (!AppUtility.getInstance().validateLetters(person_name.value.toString())) {
+            isvalid=false
             error_prerson.value = Constants.person_name_error
-        }
+        }else
+            isvalid=true
+    }
+    fun checkEmailValid() {
         if (!AppUtility.getInstance().isEmailValid(email.value.toString())) {
+            isvalid=false
             error_email.value = Constants.email_error
 
+        }else {
+            isvalid = true
         }
+    }
 
-        var msg=AppUtility.getInstance().isPasswordValid(pws.value.toString())
+    fun checkPasswordValid() {
+        var msg = AppUtility.getInstance().isPasswordValid(pws.value.toString())
         if (!msg.isEmpty()) {
-            error_pws.value=msg
+            isvalid=false
+            error_pws.value = msg
+        }else
+            isvalid=true
+    }
 
-        }
+    fun isvalidate():Boolean
+    {
+       return isvalid
+    }
+
 
     }
 
 
-}

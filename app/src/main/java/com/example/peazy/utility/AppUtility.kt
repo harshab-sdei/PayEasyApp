@@ -39,7 +39,7 @@ class AppUtility {
             var pattern = Pattern.compile(exp, Pattern.CASE_INSENSITIVE)
             var matcher = pattern.matcher(pws.toString())
             if (!matcher.matches()) {
-                Constants.email_error="Password should contain at least one number"
+                Constants.pws_error="Password should contain at least one number"
                return  "Password should contain at least one number"
             }
 
@@ -48,7 +48,7 @@ class AppUtility {
             pattern = Pattern.compile(exp)
             matcher = pattern.matcher(pws.toString())
             if (!matcher.matches()) {
-                Constants.email_error="Password should contain at least one capital letter"
+                Constants.pws_error="Password should contain at least one capital letter"
                 return "Password should contain at least one capital letter"
             }
 
@@ -70,7 +70,6 @@ class AppUtility {
                 valid = false
             }*/
             if (pws.toString().length >=8) {
-                valid = true
             }else
             {
                 return "Required Min 8 characters"

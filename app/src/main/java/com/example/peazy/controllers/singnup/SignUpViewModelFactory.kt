@@ -1,8 +1,7 @@
-package com.example.peazy.models.modelview.signup
+package com.example.peazy.controllers.singnup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.peazy.models.modelview.login.LoginModelView
 import com.example.peazy.webservices.MainRepository
 import java.lang.IllegalArgumentException
 

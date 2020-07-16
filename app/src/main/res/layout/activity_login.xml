@@ -6,13 +6,17 @@
     <data>
         <variable
             name="login"
-            type="com.example.peazy.models.modelview.login.LoginModelView" />
+            type="com.example.peazy.controllers.login.LoginModelView" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundshape"
     tools:context=".controllers.login.LoginActivity">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/bg"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -21,7 +25,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.50"
+            android:layout_weight="0.45"
             android:gravity="center"
             android:layout_gravity="center"
             android:orientation="vertical">
@@ -68,6 +72,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:hint="Email Address"
+                    style="@style/AppTheme.inputLayout"
 
                     app:layout_constraintBottom_toTopOf="@+id/bt_login"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -77,15 +82,13 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextTextEmail"
-                        style="@style/edittext_textstlyle"
                         app:errorEnabled="true"
-                        app:errorTextAppearance="@style/error_appearance"
                         app:error="@{login.error_email}"
                         android:text="@={login.email}"
+                        android:onFocusChange="@{()->login.checkEmailValid()}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:background="@drawable/edittext_outline"
                         android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,7 +99,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:hint="Password"
-
+                    style="@style/AppTheme.inputLayout"
                     app:layout_constraintBottom_toTopOf="@+id/bt_login"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.736"
@@ -107,15 +110,13 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextpassword"
-                        style="@style/edittext_textstlyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="@={login.pws}"
-                        app:errorTextAppearance="@style/error_appearance"
                         app:errorEnabled="true"
                         app:error="@{login.error_pws}"
-                        android:background="@drawable/edittext_outline"
+                        android:text="@={login.pws}"
+                        android:onFocusChange="@{()->login.checkPasswordValid()}"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,7 +128,6 @@
                     android:layout_marginBottom="76dp"
                     android:background="@drawable/button_dark_blue"
                     android:text="@string/login"
-                    android:onClick="@{()->login.checkValidation()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.633"
@@ -163,6 +163,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </LinearLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

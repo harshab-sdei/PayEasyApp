@@ -8,10 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.peazy.R
+import com.example.peazy.controllers.HomeActivity
 import com.example.peazy.controllers.singnup.SignUpActivity
 import com.example.peazy.databinding.ActivityLoginBinding
-import com.example.peazy.models.modelview.login.LoginModelView
-import com.example.peazy.models.modelview.login.LoginModelViewFactory
 
 
 class LoginActivity : AppCompatActivity() {
@@ -22,7 +21,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         databinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        modelViewFactory = LoginModelViewFactory("", "")
+        modelViewFactory =
+            LoginModelViewFactory("", "")
         viewmodels = ViewModelProvider(this, modelViewFactory).get(LoginModelView::class.java)
         var content=SpannableString(getString(R.string.forgotpws));
         content.setSpan(UnderlineSpan(), 0, content.length, 0)
@@ -32,8 +32,18 @@ class LoginActivity : AppCompatActivity() {
             val intent1 = Intent(this@LoginActivity, SignUpActivity::class.java)
             startActivity(intent1)
         }
-        databinding.lifecycleOwner=this
 
+        databinding.btLogin.setOnClickListener {
+            if(viewmodels.isvalidate())
+            {
+                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                startActivity(intent)
+            }
+            else{
+
+            }
+        }
+        databinding.lifecycleOwner=this
         databinding.login = viewmodels
 
     }
