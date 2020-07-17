@@ -4,7 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.peazy.R
 import com.google.android.gms.common.api.Status
+import com.google.android.gms.location.LocationListener
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.places.Places.getGeoDataClient
+import com.google.android.gms.location.places.Places.getPlaceDetectionClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,9 +30,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import java.util.*
 
 
 class HomeFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -50,7 +59,9 @@ var TAG="HomeFragment"
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
                     as AutocompleteSupportFragment
 
+
         // Specify the types of place data to return.
+        activity?.let { Places.initialize(it, "mykey", Locale.US) };
 
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
 
@@ -78,29 +89,49 @@ var TAG="HomeFragment"
             BitmapDescriptorFactory.fromResource(R.drawable.pin)
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
+        val sydney = LatLng(-95.765325, 37.149371)
         val melbourne = mMap.addMarker(
             MarkerOptions()
                 .position(sydney)
-                .title("Marker in Sydney")
-                .snippet("Population: 4,137,400")
+                .title("Jamestown")
+                .snippet("Jamestown, NY, the US")
                 .icon(icon))
         melbourne.setTag(0);
 
-        val sydney1 = LatLng(-34.0, 150.0)
+        val sydney1 = LatLng(-95.710351,37.055879)
         val melbourne1 = mMap.addMarker(
             MarkerOptions()
                 .position(sydney1)
-                .title("Marker in Sydney")
-                .snippet("Population: 4,137,400")
+                .title("CH")
+                .snippet("CHI, América 480, S2300 Rafaela, Santa Fe, Argentina")
                 .icon(icon))
-        melbourne1.setTag(0);
+        melbourne1.setTag(0)
+
+        val sydney2 = LatLng(-95.710013,37.056547)
+
+        val melbourne2 = mMap.addMarker(
+            MarkerOptions()
+                .position(sydney2)
+                .title("CH")
+                .snippet("CHI, América 480, S2300 Rafaela, Santa Fe, Argentina")
+                .icon(icon))
+        melbourne2.setTag(0)
+
+        val sydney3 = LatLng(-95.605308,37.029418)
+
+        val melbourne3 = mMap.addMarker(
+            MarkerOptions()
+                .position(sydney3)
+                .title("coffeyville")
+                .snippet("coffeyville, S2300 Rafaela, Santa Fe, Argentina")
+                .icon(icon))
+        melbourne3.setTag(0)
 
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
 
         mMap.uiSettings.setMapToolbarEnabled(false)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 07f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 08f))
         mMap.setOnMarkerClickListener(this);
 
 

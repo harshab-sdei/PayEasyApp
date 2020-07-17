@@ -46,6 +46,15 @@ class UserPreferenc {
             return AppConfig.getApplicationPreference()!!.getLong(key, defaultValue)
         }
 
+        fun setIntPreference(key: String?, value: Int) {
+            AppConfig.getApplicationPreferenceEditor()!!.putInt(key, value)
+            AppConfig.getApplicationPreferenceEditor()!!.commit()
+        }
+
+        fun getIntPreference(key: String?, defaultValue: Int): Int {
+            return AppConfig.getApplicationPreference()!!.getInt(key, defaultValue)
+        }
+
         fun preferenceRemoveKey(key: String?) {
             AppConfig.getApplicationPreferenceEditor()!!.remove(key)
             AppConfig.getApplicationPreferenceEditor()!!.commit()

@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
         databinding.btSingup.setOnClickListener {
             val intent1 = Intent(this@MainActivity, SignUpActivity::class.java)
             startActivity(intent1)

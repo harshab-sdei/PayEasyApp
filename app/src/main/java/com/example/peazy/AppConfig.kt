@@ -3,16 +3,16 @@ package com.example.peazy
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 
 class AppConfig :Application(){
+
     companion object {
         var mInstance: AppConfig? = null
 
 
-        private var sharedPreferences: SharedPreferences? = null
-        private var sharedPreferencesEditor: SharedPreferences.Editor? = null
-        private var mContext: Context? = null
+        lateinit var sharedPreferences: SharedPreferences
+        lateinit var sharedPreferencesEditor: SharedPreferences.Editor
+        lateinit var mContext: Context
 
         @Synchronized
         fun getInstance(): AppConfig? {
@@ -23,19 +23,24 @@ class AppConfig :Application(){
             return mContext
         }
 
-        fun setContext(mctx: Context?) {
-            mContext = mctx
+        fun setContext(context: Context)
+        {
+            mContext=context
         }
 
+
         fun getApplicationPreferenceEditor(): SharedPreferences.Editor? {
-            if (sharedPreferencesEditor == null) sharedPreferencesEditor =
-                sharedPreferences!!.edit()
+            if (sharedPreferencesEditor == null) {
+                sharedPreferences =
+                    getContext()!!.getSharedPreferences("peazy.txt", Context.MODE_PRIVATE)
+                sharedPreferencesEditor = sharedPreferences?.edit()
+            }
             return sharedPreferencesEditor
         }
 
         fun getApplicationPreference(): SharedPreferences? {
             if (sharedPreferences == null) sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(getContext())
+                getContext()!!.getSharedPreferences("peazy.txt",Context.MODE_PRIVATE)
             return sharedPreferences
         }
 
@@ -43,15 +48,16 @@ class AppConfig :Application(){
 
    }
 
+
     override fun onCreate() {
         super.onCreate()
 
         mInstance = this
         try {
-            sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            sharedPreferencesEditor = Companion.sharedPreferences?.edit()
             setContext(applicationContext)
+            sharedPreferences =
+                applicationContext!!.getSharedPreferences("peazy.txt",Context.MODE_PRIVATE)
+            sharedPreferencesEditor = Companion.sharedPreferences?.edit()
         } catch (e: Exception) {
             e.printStackTrace()
         }

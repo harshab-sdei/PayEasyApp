@@ -85,7 +85,6 @@
                         app:errorEnabled="true"
                         app:error="@{login.error_email}"
                         android:text="@={login.email}"
-                        android:onFocusChange="@{()->login.checkEmailValid()}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -116,7 +115,6 @@
                         app:errorEnabled="true"
                         app:error="@{login.error_pws}"
                         android:text="@={login.pws}"
-                        android:onFocusChange="@{()->login.checkPasswordValid()}"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,14 +148,15 @@
                     android:id="@+id/txtforgotpassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="28dp"
-                    android:layout_marginLeft="28dp"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginLeft="36dp"
                     android:text="@string/forgotpws"
                     android:textColor="@color/ligth_blue"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toTopOf="@+id/bt_login"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/text_pws" />
+                    app:layout_constraintTop_toBottomOf="@+id/text_pws"
+                    app:layout_constraintVertical_bias="0.48" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

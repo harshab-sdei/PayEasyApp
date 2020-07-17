@@ -65,7 +65,6 @@
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:hint="Full Name"
-
                             app:layout_constraintBottom_toTopOf="@+id/text_email"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +75,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:onFocusChange="@{()->signup.checkvalidateLetters()}"
                                 android:inputType="textPersonName"
                                 android:text="@={signup.person_name}"
                                 app:error="@{signup.error_prerson}"
@@ -120,7 +118,6 @@
                                 android:layout_marginTop="2dp"
                                 app:error="@{signup.error_email}"
                                 app:errorEnabled="true"
-                                android:onFocusChange="@{()->signup.checkEmailValid()}"
                                 android:inputType="textEmailAddress"
                                 android:text="@={signup.email}"
 
@@ -150,7 +147,6 @@
                                 android:layout_marginTop="2dp"
                                 app:error="@{signup.error_pws}"
                                 app:errorEnabled="true"
-                                android:onFocusChange="@{()->signup.checkPasswordValid()}"
                                 android:inputType="textPassword"
                                 android:text="@={signup.pws}" />
                         </com.google.android.material.textfield.TextInputLayout>

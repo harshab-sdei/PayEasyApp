@@ -2,8 +2,12 @@ package com.example.peazy.controllers.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
+import com.example.peazy.utility.Resource
+import com.example.peazy.webservices.RerofitInsatance
+import kotlinx.coroutines.Dispatchers
 
 
 class LoginModelView(email: String,pws: String): ViewModel() {
@@ -25,11 +29,7 @@ class LoginModelView(email: String,pws: String): ViewModel() {
             error_email.value=Constants.email_error
 
         }
-        var msg=AppUtility.getInstance().isPasswordValid(pws.value.toString())
-        if (!msg.isEmpty()) {
-            error_pws.value=msg
 
-        }
 
     }
 
@@ -44,9 +44,9 @@ class LoginModelView(email: String,pws: String): ViewModel() {
 
     fun checkPasswordValid() {
         var msg = AppUtility.getInstance().isPasswordValid(pws.value.toString())
-        if (!msg.isEmpty()) {
+        if (!msg) {
             isvalid=false
-            error_pws.value = msg
+            error_pws.value = Constants.pws_error
         }else
             isvalid=true
     }
@@ -56,5 +56,21 @@ class LoginModelView(email: String,pws: String): ViewModel() {
         return isvalid
     }
 
+    fun loginUser(params:Map<String,String>) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = RerofitInsatance.apiService.loginUser(params)))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
 
+    fun forgotPassword(email: String) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = RerofitInsatance.apiService.fogotPassword(email)))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
 }

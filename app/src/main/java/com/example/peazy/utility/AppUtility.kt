@@ -1,9 +1,26 @@
 package com.example.peazy.utility
 
 
+import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.provider.Settings
+import android.util.Log
+import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import androidx.lifecycle.liveData
+import com.example.peazy.R
+import com.example.peazy.controllers.HomeActivity
+import com.example.peazy.models.signup.SignUP
+import com.example.peazy.webservices.RerofitInsatance
+import kotlinx.android.synthetic.main.forgotpws_dialog.view.*
+import kotlinx.coroutines.Dispatchers
+import retrofit2.Response
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -31,7 +48,7 @@ class AppUtility {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
         }
 
-        fun isPasswordValid(pws: String): String {
+        fun isPasswordValid(pws: String): Boolean {
             var valid = true
 
             // Password should contain at least one number
@@ -40,7 +57,7 @@ class AppUtility {
             var matcher = pattern.matcher(pws.toString())
             if (!matcher.matches()) {
                 Constants.pws_error="Password should contain at least one number"
-               return  "Password should contain at least one number"
+               return  false
             }
 
             // Password should contain at least one capital letter
@@ -49,7 +66,7 @@ class AppUtility {
             matcher = pattern.matcher(pws.toString())
             if (!matcher.matches()) {
                 Constants.pws_error="Password should contain at least one capital letter"
-                return "Password should contain at least one capital letter"
+                return false
             }
 
             // Password should contain at least one small letter
@@ -58,7 +75,7 @@ class AppUtility {
             matcher = pattern.matcher(pws.toString())
             if (!matcher.matches()) {
                 Constants.pws_error="Password should contain at least one small letter"
-                return "Password should contain at least one small letter"
+                return false
             }
 
           /*  // Password should contain at least one special character
@@ -72,10 +89,12 @@ class AppUtility {
             if (pws.toString().length >=8) {
             }else
             {
-                return "Required Min 8 characters"
+                Constants.pws_error="Required Min 8 characters"
+
+                return false
             }
 
-            return ""
+            return true
         }
 
     var PATTERN: Pattern = Pattern.compile(Companion.REG)
@@ -107,4 +126,49 @@ class AppUtility {
     }
 
 
-}
+    fun getDeviceToken(context: Context):String
+    {
+        var deviceAppUID: String=""
+        try {
+            deviceAppUID=
+                Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
+
+        }catch (e:Exception){e.printStackTrace()}
+
+        Log.d("Token",""+deviceAppUID)
+        return deviceAppUID
+
+    }
+
+
+    fun alertDialogWithSingleButton(context: Context,title:String,msg:String)
+    {
+        val dialogBuilder = AlertDialog.Builder(context)
+
+        // set message of alert dialog
+        dialogBuilder.setMessage(msg)
+            // if the dialog is cancelable
+            .setCancelable(false)
+            // positive button text and action
+           /* .setPositiveButton("Proceed", DialogInterface.OnClickListener {
+                    dialog, id -> dialog.dismiss()
+            })*/
+            // negative button text and action
+            .setNegativeButton("Ok", DialogInterface.OnClickListener {
+                    dialog, id -> dialog.cancel()
+            })
+
+        // create dialog box
+        val alert = dialogBuilder.create()
+        // set title for alert dialog box
+        alert.setTitle(title)
+        // show alert dialog
+        alert.show()
+
+    }
+
+
+
+
+
+   }

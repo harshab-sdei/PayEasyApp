@@ -9,5 +9,14 @@ class Constants {
      var pws_error="Password is not valid."
      var person_name_error="Full Name is not correct."
 
+     val IS_USER_Login:String="is_user_login"
+
+     /*API Parameters Name */
+      var NAME:String="name"
+      var EMAIL:String="email"
+      var PASSWORD:String="password"
+      var LANGUAGE_SEL:String="language_selected"
+      var DEVICE_TOKEN:String="device_token"
+      var PLATFORM:String="platform"
     }
 }

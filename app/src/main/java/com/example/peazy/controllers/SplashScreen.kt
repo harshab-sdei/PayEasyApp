@@ -7,15 +7,26 @@ import android.os.Handler
 import android.view.View
 import com.example.peazy.MainActivity
 import com.example.peazy.R
+import com.example.peazy.utility.AppUtility
+import com.example.peazy.utility.Constants
+import com.example.peazy.utility.appconfig.UserPreferenc
 
 class SplashScreen : AppCompatActivity() {
+   lateinit var homeIntent :Intent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+        UserPreferenc.setStringPreference(Constants.DEVICE_TOKEN,""+ AppUtility.getInstance().getDeviceToken(applicationContext))
 
 
         val SPLASH_TIME_OUT = 3000
-        val homeIntent = Intent(this@SplashScreen, MainActivity::class.java)
+        if(!UserPreferenc.getBooleanPreference(Constants.IS_USER_Login,false)) {
+
+             homeIntent = Intent(this@SplashScreen, MainActivity::class.java)
+        }else
+        {
+            homeIntent = Intent(this@SplashScreen, HomeActivity::class.java)
+        }
         Handler().postDelayed({
             //Do some stuff here, like implement deep linking
             startActivity(homeIntent)
