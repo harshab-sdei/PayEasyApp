@@ -1,26 +1,23 @@
 package com.example.peazy.utility
 
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.GradientDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.provider.Settings
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.Observer
-import androidx.lifecycle.liveData
 import com.example.peazy.R
-import com.example.peazy.controllers.HomeActivity
-import com.example.peazy.models.signup.SignUP
-import com.example.peazy.webservices.RerofitInsatance
-import kotlinx.android.synthetic.main.forgotpws_dialog.view.*
-import kotlinx.coroutines.Dispatchers
-import retrofit2.Response
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -168,7 +165,44 @@ class AppUtility {
     }
 
 
+    fun showToast(ctx: Context?, Message: String?) {
 
+        /* Toast toast = Toast.makeText(ctx, Message, Toast.LENGTH_LONG);
+        toast.show();
+*/
+        if (ctx != null) {
+//            Typeface fontLight = getFontRegular(ctx);
+            val customToastroot: View =
+                LayoutInflater.from(ctx).inflate(R.layout.custom_toast, null)
+            val text =
+                customToastroot.findViewById<View>(R.id.tv_toast_message) as TextView
+
+            val toastView =
+                customToastroot.findViewById<View>(R.id.layout_toast_background) as LinearLayout
+
+//            text.setTypeface(fontLight);
+            text.text = Message
+            val customtoast = Toast(ctx)
+            val bgDrawable = toastView.background as GradientDrawable
+            bgDrawable.cornerRadius = 5f
+
+            //icon.setImageResource(R.drawable.ic_action_success);
+            bgDrawable.setColorFilter(
+                ctx.resources.getColor(R.color.black),
+                PorterDuff.Mode.SRC_IN
+            )
+            //icon.setImageResource(R.drawable.ic_action_warning);
+            customtoast.view = customToastroot
+            customtoast.setGravity(
+                Gravity.BOTTOM or Gravity.CENTER_VERTICAL, 0
+                , 150
+            )
+            customtoast.duration = Toast.LENGTH_LONG
+            customtoast.show()
+        } else {
+            Log.e("showCustomToastAlert: ", "context null")
+        }
+    }
 
 
    }

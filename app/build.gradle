@@ -129,3 +129,4 @@ dependencies {
     //OkHttp Libraries
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
 }
+apply plugin: 'com.google.gms.google-services'

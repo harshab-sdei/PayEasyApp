@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Peazy</string>
+    <string name="connection_failed">Connection Failed</string>
+
     <string name="mainactivity_title">Join to Peazy</string>
     <string name="login">Log in</string>
     <string name="or">or</string>

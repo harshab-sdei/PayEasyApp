@@ -3,14 +3,12 @@ package com.example.peazy.controllers
 import android.Manifest
 import android.app.ProgressDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -29,13 +27,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.peazy.R
 import com.example.peazy.models.logout.Logout
-import com.example.peazy.models.signup.SignUP
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Resource
 import com.example.peazy.utility.Status
 import com.example.peazy.utility.appconfig.UserPreferenc
-import com.example.peazy.webservices.RerofitInsatance
+import com.example.peazy.webservices.RetrofitInsatance
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -128,7 +125,7 @@ class HomeActivity : AppCompatActivity() {
     fun logoutUser() = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = RerofitInsatance.apiService.logoutUser()))
+            emit(Resource.success(data = RetrofitInsatance.apiService.logoutUser()))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

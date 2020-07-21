@@ -6,7 +6,7 @@ import androidx.lifecycle.liveData
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Resource
-import com.example.peazy.webservices.RerofitInsatance
+import com.example.peazy.webservices.RetrofitInsatance
 import kotlinx.coroutines.Dispatchers
 
 
@@ -59,7 +59,7 @@ class LoginModelView(email: String,pws: String): ViewModel() {
     fun loginUser(params:Map<String,String>) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = RerofitInsatance.apiService.loginUser(params)))
+            emit(Resource.success(data = RetrofitInsatance.apiService.loginUser(params)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
@@ -68,7 +68,7 @@ class LoginModelView(email: String,pws: String): ViewModel() {
     fun forgotPassword(email: String) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = RerofitInsatance.apiService.fogotPassword(email)))
+            emit(Resource.success(data = RetrofitInsatance.apiService.fogotPassword(email)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

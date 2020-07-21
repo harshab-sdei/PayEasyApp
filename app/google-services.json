@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "63506923051",
+    "firebase_url": "https://sublime-lambda-284005.firebaseio.com",
+    "project_id": "sublime-lambda-284005",
+    "storage_bucket": "sublime-lambda-284005.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63506923051:android:aad3a98efc186a9b73746e",
+        "android_client_info": {
+          "package_name": "com.example.peazy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "63506923051-1o63ibil59p31tl8t0tgm63qq4fidof3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSrjisanRjRflfR_B4ukdHBqknkezF2LE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "63506923051-1o63ibil59p31tl8t0tgm63qq4fidof3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,8 +6,7 @@ import androidx.lifecycle.liveData
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Resource
-import com.example.peazy.webservices.ApiHelper
-import com.example.peazy.webservices.RerofitInsatance
+import com.example.peazy.webservices.RetrofitInsatance
 import kotlinx.coroutines.Dispatchers
 
 class SignUpViewMode/*(private val mainRepository: MainRepository)*/:ViewModel() {
@@ -53,7 +52,7 @@ class SignUpViewMode/*(private val mainRepository: MainRepository)*/:ViewModel()
     fun signupUser(name:String,email:String,pws:String ) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = RerofitInsatance.apiService.signupUser(name,email,pws)))
+            emit(Resource.success(data = RetrofitInsatance.apiService.signupUser(name, email, pws)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

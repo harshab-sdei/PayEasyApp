@@ -9,14 +9,23 @@ class Constants {
      var pws_error="Password is not valid."
      var person_name_error="Full Name is not correct."
 
-     val IS_USER_Login:String="is_user_login"
+     val IS_USER_Login: String = "is_user_login"
 
      /*API Parameters Name */
-      var NAME:String="name"
-      var EMAIL:String="email"
-      var PASSWORD:String="password"
-      var LANGUAGE_SEL:String="language_selected"
-      var DEVICE_TOKEN:String="device_token"
-      var PLATFORM:String="platform"
+     var NAME: String = "name"
+     var EMAIL: String = "email"
+     var PASSWORD: String = "password"
+     var LANGUAGE_SEL: String = "language_selected"
+     var DEVICE_TOKEN: String = "device_token"
+     var PLATFORM: String = "platform"
+
+
+     val googleapi: String = "AIzaSyDSrjisanRjRflfR_B4ukdHBqknkezF2LE"
+     val radius: Int = 3000;
+
+
+     const val ACCESS_FINE_LOCATION = "access fine location"
+     const val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1
+
     }
 }

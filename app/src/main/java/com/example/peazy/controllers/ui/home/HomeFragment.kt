@@ -4,31 +4,34 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
+import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.peazy.R
+import com.example.peazy.utility.AppUtility
+import com.example.peazy.utility.Constants
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 import com.google.android.gms.common.api.Status
-import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.places.Places.getGeoDataClient
-import com.google.android.gms.location.places.Places.getPlaceDetectionClient
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -37,12 +40,47 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import java.util.*
 
 
-class HomeFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-var TAG="HomeFragment"
+class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
+    OnConnectionFailedListener {
+    var TAG = "HomeFragment"
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var mMap: GoogleMap
-    var locationPermissionGranted=false
-    val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=101
+    var locationPermissionGranted: Boolean = false
+    private val googleApiClient: GoogleApiClient? = null
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var locationRequest: LocationRequest? = null
+
+    private var employeeLocation: LatLng? = null
+    protected var locationManager: LocationManager? = null
+    var isGPSEnabled = false
+    var isNetworkEnabled = false
+    private var permissionsList: ArrayList<String>? = null
+
+    var locationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            for (location in locationResult.locations) {
+                employeeLocation = LatLng(location.latitude, location.longitude)
+                //mMap.addMarker(new MarkerOptions().position(sydney).title("My Location"));
+                //mMap.addMarker(new MarkerOptions().position(sydney).title("My Location"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(employeeLocation))
+                mMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            location.latitude,
+                            location.longitude
+                        ), 15f
+                    )
+                )
+                Log.d(
+                    "onLocationResult: ",
+                    location.latitude.toString() + " , " + location.longitude
+                )
+            }
+        }
+    }
+
+
+    @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,7 +91,23 @@ var TAG="HomeFragment"
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
+
+
+
+        try {
+            if (!checkLocationPermission()) {
+
+                getPermissions()
+            }
+            fusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(this.requireActivity())
+            mapFragment?.getMapAsync(this)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment =
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
@@ -77,8 +131,84 @@ var TAG="HomeFragment"
                 Log.i(TAG, "An error occurred: $status")
             }
         })
+        try {
+            val myLocationButton: View = mapFragment!!.requireView().findViewById(0x2)
+            // Specify the types of place data to return.
+
+            if (myLocationButton != null && myLocationButton.layoutParams is RelativeLayout.LayoutParams) {
+                // location button is inside of RelativeLayout
+                val params: RelativeLayout.LayoutParams =
+                    myLocationButton.layoutParams as RelativeLayout.LayoutParams
+
+                // Align it to - parent BOTTOM|LEFT
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 50)
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 50)
+
+                // Update margins, set to 10dp
+                val margin = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 10f,
+                    resources.displayMetrics
+                ) as Int
+                params.setMargins(margin, margin, margin, margin)
+
+                myLocationButton.layoutParams = params
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
         activity?.let { themeNavAndStatusBar(it) }
         return root
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+        val res: Int = this.requireActivity().checkCallingOrSelfPermission(permission)
+        return res == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun getPermissions() {
+        val permissionsNeeded: MutableList<String> =
+            ArrayList()
+        Log.d("", "getPermissions: sms read and receive")
+        permissionsList = ArrayList<String>()
+        if (!addPermission(
+                permissionsList!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) permissionsNeeded.add(Constants.ACCESS_FINE_LOCATION)
+        if (permissionsList!!.size > 0) {
+            ActivityCompat.requestPermissions(
+                this.requireActivity(), permissionsList!!.toTypedArray(),
+                Constants.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS
+            )
+            return
+        }
+        if (permissionsList!!.size == 0) {
+//            redirect();
+        }
+    }
+
+    private fun addPermission(
+        permissionsList: MutableList<String>,
+        permission: String
+    ): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this.requireActivity(),
+                permission
+            ) !== PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionsList.add(permission)
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this.requireActivity(),
+                    permission
+                )
+            ) return false
+        }
+        return true
     }
 
     @SuppressLint("MissingPermission")
@@ -88,6 +218,22 @@ var TAG="HomeFragment"
         val icon =
             BitmapDescriptorFactory.fromResource(R.drawable.pin)
 
+
+        if (ContextCompat.checkSelfPermission(
+                this.requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) !== PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                this.requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) !== PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        mMap.isMyLocationEnabled = true
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isMyLocationButtonEnabled = true
+
+
         // Add a marker in Sydney and move the camera
         val sydney = LatLng(-95.765325, 37.149371)
         val melbourne = mMap.addMarker(
@@ -95,7 +241,8 @@ var TAG="HomeFragment"
                 .position(sydney)
                 .title("Jamestown")
                 .snippet("Jamestown, NY, the US")
-                .icon(icon))
+                .icon(icon)
+        )
         melbourne.setTag(0);
 
         val sydney1 = LatLng(-95.710351,37.055879)
@@ -127,96 +274,11 @@ var TAG="HomeFragment"
                 .icon(icon))
         melbourne3.setTag(0)
 
-        mMap.uiSettings.isZoomControlsEnabled = true
-        mMap.uiSettings.isMyLocationButtonEnabled = true
 
         mMap.uiSettings.setMapToolbarEnabled(false)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 08f))
-        mMap.setOnMarkerClickListener(this);
+        //    mMap.setOnMarkerClickListener(this)
 
 
-    }
-
-    override fun onMarkerClick(marker: Marker?): Boolean {
-        // Retrieve the data from the marker.
-
-        // Retrieve the data from the marker.
-        var clickCount = marker!!.getTag()
-
-        // Check if a click count was set, then display the click count.
-
-        // Check if a click count was set, then display the click count.
-      /*  if (clickCount != null) {
-            clickCount = clickCount + 1
-            marker.setTag(clickCount)
-            Toast.makeText(
-                this,
-                marker.getTitle().toString() +
-                        " has been clicked " + clickCount + " times.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }*/
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
-        return false
-    }
-
-    private fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
-            locationPermissionGranted = true
-        } else {
-            activity?.let {
-                ActivityCompat.requestPermissions(
-                    it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
-            }
-        }
-    }
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-         locationPermissionGranted = false
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationPermissionGranted = true
-                }
-            }
-        }
-        updateLocationUI()
-    }
-
-    private fun updateLocationUI() {
-        if (mMap == null) {
-            return
-        }
-        try {
-            if (locationPermissionGranted) {
-                mMap?.isMyLocationEnabled = true
-                mMap?.uiSettings?.isMyLocationButtonEnabled = true
-            } else {
-                mMap?.isMyLocationEnabled = false
-                mMap?.uiSettings?.isMyLocationButtonEnabled = false
-                getLocationPermission()
-            }
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -236,5 +298,87 @@ var TAG="HomeFragment"
         w.setStatusBarColor(activity.resources.getColor(android.R.color.transparent))
     }
 
+    private fun requestLocationUpdates() {
+        try {
+            locationRequest = LocationRequest()
+            locationRequest!!.setInterval(2000)
+            locationRequest!!.setFastestInterval(2000)
+            //locationRequest.setSmallestDisplacement(5);
+            locationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            if (ContextCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) !== PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) !== PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            fusedLocationProviderClient!!.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.myLooper()
+            )
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onConnected(p0: Bundle?) {
+        TODO("Not yet implemented")
+        requestLocationUpdates()
+    }
+
+    override fun onConnectionSuspended(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        AppUtility.getInstance()
+            .showToast(this.requireContext(), getString(R.string.connection_failed))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (fusedLocationProviderClient != null) {
+            fusedLocationProviderClient!!.removeLocationUpdates(locationCallback)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (fusedLocationProviderClient != null) {
+            fusedLocationProviderClient!!.removeLocationUpdates(locationCallback)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        checkAndRequestPermissions()
+    }
+
+    fun checkAndRequestPermissions(): Boolean {
+        val permissionSendMessage = ContextCompat.checkSelfPermission(
+            this.requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val listPermissionsNeeded: MutableList<String> =
+            ArrayList()
+        if (permissionSendMessage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (permissionSendMessage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        return true
+    }
+
 
 }
+

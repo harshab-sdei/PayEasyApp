@@ -1,13 +1,20 @@
 package com.example.peazy.controllers.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import com.example.peazy.utility.Resource
+import com.example.peazy.webservices.RetrofitForGoogleApi
+import kotlinx.coroutines.Dispatchers
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    fun findNearByPlace(param: Map<String, Any>) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = RetrofitForGoogleApi.apiService.findNearByPlace()))
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
     }
-    val text: LiveData<String> = _text
 }
