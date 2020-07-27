@@ -12,10 +12,16 @@ class BasicAuthInterceptor(s: String, s1: String) :Interceptor{
         var request = chain.request()
         var builder = request.newBuilder()
             .header("Authorization", credentials)
-            .addHeader(Constants.LANGUAGE_SEL,"1")
-            .addHeader(Constants.PLATFORM,"1")
-            .addHeader(Constants.DEVICE_TOKEN,""+ UserPreferenc.getStringPreference(Constants.DEVICE_TOKEN,""))
-            .addHeader("accessToken",""+ UserPreferenc.getStringPreference(Constants.DEVICE_TOKEN,""))
+            .addHeader(Constants.LANGUAGE_SEL, "1")
+            .addHeader(Constants.PLATFORM, "1")
+            .addHeader(
+                Constants.DEVICE_TOKEN,
+                "" + UserPreferenc.getStringPreference(Constants.DEVICE_TOKEN, "")
+            )
+            .addHeader(
+                "accessToken",
+                "" + UserPreferenc.getStringPreference(Constants.ACCESS_TOKEN, "")
+            )
 
         val request1 = builder.build()
         return chain.proceed(request1)

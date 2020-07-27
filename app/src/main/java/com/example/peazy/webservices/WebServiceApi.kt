@@ -1,10 +1,11 @@
 package com.example.peazy.webservices
 
+import com.example.peazy.models.category.MenuCategory
 import com.example.peazy.models.logout.Logout
-import com.example.peazy.models.nearbyplace.NearByPlace
+import com.example.peazy.models.menu_item.BarMenuItem
+import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.models.signup.SignUP
-import com.example.peazy.utility.Constants
-import com.example.peazy.utility.Constants.Companion.googleapi
+import com.example.peazy.models.subcategory.SubCategory
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -26,7 +27,21 @@ interface WebServiceApi {
     @POST("/api/v2/user/logout")
     suspend fun logoutUser(): Response<Logout>
 
-    @GET("maps/api/place/textsearch/json?location=-33.8670522,151.1957362&radius=500&types=food&key=AIzaSyDSrjisanRjRflfR_B4ukdHBqknkezF2LE")
-    suspend fun findNearByPlace(): Response<NearByPlace>
+    @FormUrlEncoded
+    @POST("/api/v2/user/bar/nearby")
+    suspend fun nearByBar(@Field("coordinate") coordinate: String): Response<NearByBar>
+
+
+    @GET("/api/v2/category/list")
+    suspend fun getCategoryList(@QueryMap params: Map<String, String>): Response<MenuCategory>
+
+    @GET("{fullUrl}")
+    suspend fun getSubCategory(
+        @Path(value = "fullUrl", encoded = true) fullUrl: String,
+        @QueryMap params: Map<String, String>
+    ): Response<SubCategory>
+
+    @GET(" /api/v2/item/list")
+    suspend fun getMenuItem(@QueryMap params: Map<String, String>): Response<BarMenuItem>
 
 }

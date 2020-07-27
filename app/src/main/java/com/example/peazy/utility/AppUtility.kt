@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.peazy.R
+import com.example.peazy.utility.appconfig.UserPreferenc
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -48,32 +49,32 @@ class AppUtility {
         fun isPasswordValid(pws: String): Boolean {
             var valid = true
 
-            // Password should contain at least one number
-            var exp = ".*[0-9].*"
-            var pattern = Pattern.compile(exp, Pattern.CASE_INSENSITIVE)
-            var matcher = pattern.matcher(pws.toString())
-            if (!matcher.matches()) {
-                Constants.pws_error="Password should contain at least one number"
-               return  false
-            }
+            /*  // Password should contain at least one number
+              var exp = ".*[0-9].*"
+              var pattern = Pattern.compile(exp, Pattern.CASE_INSENSITIVE)
+              var matcher = pattern.matcher(pws.toString())
+              if (!matcher.matches()) {
+                  Constants.pws_error="Password should contain at least one number"
+                 return  false
+              }
 
-            // Password should contain at least one capital letter
-            exp = ".*[A-Z].*"
-            pattern = Pattern.compile(exp)
-            matcher = pattern.matcher(pws.toString())
-            if (!matcher.matches()) {
-                Constants.pws_error="Password should contain at least one capital letter"
-                return false
-            }
+              // Password should contain at least one capital letter
+              exp = ".*[A-Z].*"
+              pattern = Pattern.compile(exp)
+              matcher = pattern.matcher(pws.toString())
+              if (!matcher.matches()) {
+                  Constants.pws_error="Password should contain at least one capital letter"
+                  return false
+              }
 
-            // Password should contain at least one small letter
-            exp = ".*[a-z].*"
-            pattern = Pattern.compile(exp)
-            matcher = pattern.matcher(pws.toString())
-            if (!matcher.matches()) {
-                Constants.pws_error="Password should contain at least one small letter"
-                return false
-            }
+              // Password should contain at least one small letter
+              exp = ".*[a-z].*"
+              pattern = Pattern.compile(exp)
+              matcher = pattern.matcher(pws.toString())
+              if (!matcher.matches()) {
+                  Constants.pws_error="Password should contain at least one small letter"
+                  return false
+              }*/
 
           /*  // Password should contain at least one special character
             // Allowed special characters : "~!@#$%^&*()-_=+|/,."';:{}[]<>?"
@@ -132,7 +133,13 @@ class AppUtility {
 
         }catch (e:Exception){e.printStackTrace()}
 
-        Log.d("Token",""+deviceAppUID)
+        Log.d(
+            "Token",
+            "" + deviceAppUID + "accessToken=" + UserPreferenc.getStringPreference(
+                Constants.ACCESS_TOKEN,
+                ""
+            )
+        )
         return deviceAppUID
 
     }

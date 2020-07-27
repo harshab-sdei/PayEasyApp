@@ -17,15 +17,21 @@ class Constants {
      var PASSWORD: String = "password"
      var LANGUAGE_SEL: String = "language_selected"
      var DEVICE_TOKEN: String = "device_token"
-     var PLATFORM: String = "platform"
+        var ACCESS_TOKEN: String = "access_token"
+        var PLATFORM: String = "platform"
 
 
-     val googleapi: String = "AIzaSyDSrjisanRjRflfR_B4ukdHBqknkezF2LE"
-     val radius: Int = 3000;
+        val googleapi: String = "AIzaSyBKum4xy87zoNTlYlXFJsGYFiXmL9aGW_k"
+        val radius: Int = 3000;
 
 
-     const val ACCESS_FINE_LOCATION = "access fine location"
-     const val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1
+        const val ACCESS_FINE_LOCATION = "access fine location"
+        const val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 101
 
+
+        //path
+        const val BAR_DETAIL_IMG_PATH = "bar_image_path"
+        const val MENU_CAT_IMG_PATH = "menu_cat_img_path"
+        const val MENU_ITEM_PATH = "menu_item_path"
     }
 }

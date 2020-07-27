@@ -135,7 +135,7 @@ class SignUpActivity : AppCompatActivity() {
                             }
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@SignUpActivity)
-                                progressDialog!!.setTitle("Sign Up")
+
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
 

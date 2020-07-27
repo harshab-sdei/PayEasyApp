@@ -10,5 +10,8 @@
     <color name="ligth_blue">#138EFB</color>
     <color name="gray">#AFAFAF</color>
     <color name="toolbarIconColor">#FFFFFF</color>
+    <color name="light_gray">#CCD0CF</color>
+    <color name="light_sky">#ECFBF5</color>
+    <color name="black_overlay">#66000000</color>
 
 </resources>

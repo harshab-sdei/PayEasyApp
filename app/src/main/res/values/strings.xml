@@ -28,4 +28,19 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="title_activity_maps">Map</string>
 
+    <!--delete it -->
+    <string name="detail">Madbreaks There is nothing "serendipitous" about it, EditText IS a TextView with a few added methods and overrides that is specifically tailored to accommodate varying length text. In particular EditText overrides the return value for the TextView getDefaultMovementMethod function. The default implementation returns NULL, EditText basically does the same thing all these other answers are suggesting. As far as using the tools that Android provides is concerned, the EditText class is far less likely to become deprecated than any of the</string>
+    <string name="booktable">Book a Table</string>
+    <string name="odernow">Oder Now</string>
+    <string name="num_person">How many person</string>
+    <string name="title_date"><![CDATA[Select your time & Date]]></string>
+    <string name="book_now">Book Now</string>
+    <string name="close">close</string>
+    <string name="expand">expand</string>
+    <string name="tb_book_note">You need to book a table 3hrs before</string>
+    <string name="view_cart">View Cart</string>
+    <string name="msgorder">Where are you\n located at?</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

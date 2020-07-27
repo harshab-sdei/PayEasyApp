@@ -1,5 +1,6 @@
 package com.example.peazy.webservices
 
+
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -27,7 +28,6 @@ class RetrofitInsatance {
 
 
         val apiService: WebServiceApi = getRetrofitInstance().create(WebServiceApi::class.java)
-
 
 
     }

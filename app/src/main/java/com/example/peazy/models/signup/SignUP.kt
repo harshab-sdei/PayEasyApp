@@ -7,5 +7,7 @@ data class SignUP(
     @SerializedName("err")
     val err: Err,
     @SerializedName("status")
-    val status: Int
+    val status: Int,
+    val res: Res
+
 )

@@ -9,7 +9,11 @@
         android:id="@+id/nav_home"
         android:name="com.example.peazy.controllers.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_barDetailFragment"
+            app:destination="@id/barDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_gallery"
@@ -22,4 +26,39 @@
         android:name="com.example.peazy.controllers.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/barDetailFragment"
+        android:name="com.example.peazy.controllers.ui.bardetail.BarDetailFragment"
+        android:label="Bar Detail"
+
+        tools:layout="@layout/main_fragment">
+        <action
+            android:id="@+id/action_barDetailFragment_to_barStatus"
+            app:destination="@id/barStatus" />
+        <action
+            android:id="@+id/action_barDetailFragment_to_menuFragment"
+            app:destination="@id/menuFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.example.peazy.controllers.ui.menu.MenuFragment"
+        android:label="main_fragment2"
+        tools:layout="@layout/main_fragment2" />
+    <fragment
+        android:id="@+id/barStatus"
+        android:name="com.example.peazy.controllers.ui.barstatus.BarStatus"
+        android:label=""
+        tools:layout="@layout/bar_status_fragment">
+        <action
+            android:id="@+id/action_barStatus_to_menuFragment"
+            app:destination="@id/menuFragment" />
+        <action
+            android:id="@+id/action_barStatus_to_successStatus"
+            app:destination="@id/successStatus" />
+    </fragment>
+    <fragment
+        android:id="@+id/successStatus"
+        android:name="com.example.peazy.SuccessStatus"
+        android:label="fragment_success_status"
+        tools:layout="@layout/fragment_success_status" />
 </navigation>

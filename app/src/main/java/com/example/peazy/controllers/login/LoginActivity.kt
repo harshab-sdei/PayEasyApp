@@ -147,7 +147,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@LoginActivity)
-                                progressDialog!!.setTitle("Sign Up")
+
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
 
@@ -195,7 +195,6 @@ class LoginActivity : AppCompatActivity() {
                             }
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@LoginActivity)
-                                progressDialog!!.setTitle("Sign Up")
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
 
@@ -216,7 +215,13 @@ class LoginActivity : AppCompatActivity() {
             if (signUP.status == 200) {
 
                 if(ishome) {
-                    UserPreferenc.setBooleanPreference(Constants.IS_USER_Login,true)
+
+                    UserPreferenc.setStringPreference(
+                        Constants.ACCESS_TOKEN,
+                        "" + signUP.res.access_token
+                    )
+
+                    UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
                     val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -234,13 +239,13 @@ class LoginActivity : AppCompatActivity() {
                         "Error in  Sign Up"
                     )
 
-                }else {
-                        AppUtility.getInstance()
-                            .alertDialogWithSingleButton(
-                                this@LoginActivity,
-                                "Error",
-                                "" + errors.msg
-                            )
+                } else {
+                    AppUtility.getInstance()
+                        .alertDialogWithSingleButton(
+                            this@LoginActivity,
+                            "Error",
+                            "" + errors.msg
+                        )
                 }
             }
 

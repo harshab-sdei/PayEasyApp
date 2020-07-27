@@ -6,14 +6,22 @@
         <item name="colorPrimaryDark">@color/orange</item>
         <item name="colorAccent">@color/gray</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item  name="android:windowActivityTransitions" tools:targetApi="lollipop">true</item>
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+
+        <item name="android:windowActivityTransitions" tools:targetApi="lollipop">true</item>
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
         <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
         <item name="actionModeStyle">@style/Widget.App.ActionMode</item>
-        <item name="actionModeCloseDrawable">@drawable/ic_baseline_close_24</item>
         <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
 
     </style>
+
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/black</item>
+    </style>
+
     <style name="Widget.App.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="titleTextStyle">?attr/textAppearanceHeadline6</item>
         <item name="subtitleTextStyle">?attr/textAppearanceSubtitle1</item>
@@ -41,6 +49,19 @@
         <item name="fontFamily">@string/font_family_Sofia_Pro</item>
     </style>
 
+    <style name="AppTheme.subtitle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@string/font_family_Sofia_Pro</item>
+    </style>
+
+    <style name="AppTheme.subtitle.address">
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@string/font_family_Sofia_Pro</item>
+    </style>
+
     <style name="AppTheme.inputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">16sp</item>
@@ -48,8 +69,7 @@
         <item name="boxStrokeColor">@color/gray</item>
     </style>
 
-    <style name="error_appearance" parent="">
-    </style>
+    <style name="error_appearance" parent=""></style>
 
     <color name="red_500">#BA3127</color>
 
