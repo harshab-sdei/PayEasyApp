@@ -40,7 +40,11 @@
     <string name="tb_book_note">You need to book a table 3hrs before</string>
     <string name="view_cart">View Cart</string>
     <string name="msgorder">Where are you\n located at?</string>
+    <string name="mssuccess">Successfully</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="msgbook">Your table has been booked successfully</string>
+    <string name="msgtablenum">Table No.</string>
+    <string name="thanksmsg">Thanks!</string>
 
 </resources>

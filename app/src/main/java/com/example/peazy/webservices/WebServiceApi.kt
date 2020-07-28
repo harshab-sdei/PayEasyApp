@@ -1,9 +1,11 @@
 package com.example.peazy.webservices
 
+import com.example.peazy.models.booktable.BookTable
 import com.example.peazy.models.category.MenuCategory
 import com.example.peazy.models.logout.Logout
 import com.example.peazy.models.menu_item.BarMenuItem
 import com.example.peazy.models.nearby.NearByBar
+import com.example.peazy.models.reserve_table.ReserveTable
 import com.example.peazy.models.signup.SignUP
 import com.example.peazy.models.subcategory.SubCategory
 import retrofit2.Response
@@ -31,6 +33,13 @@ interface WebServiceApi {
     @POST("/api/v2/user/bar/nearby")
     suspend fun nearByBar(@Field("coordinate") coordinate: String): Response<NearByBar>
 
+    @FormUrlEncoded
+    @POST("/api/v2/user/book/table")
+    suspend fun bookTable(@FieldMap params: Map<String, String>): Response<BookTable>
+
+    @FormUrlEncoded
+    @POST("/api/v2/user/reserve/table")
+    suspend fun reserveTable(@FieldMap params: Map<String, String>): Response<ReserveTable>
 
     @GET("/api/v2/category/list")
     suspend fun getCategoryList(@QueryMap params: Map<String, String>): Response<MenuCategory>

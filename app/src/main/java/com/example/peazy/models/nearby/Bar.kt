@@ -9,5 +9,6 @@ data class Bar(
     val name: String,
     val p_commission: Int,
     val total_reviews: Int,
+    val bar_id: String,
     val vat: Int
 )

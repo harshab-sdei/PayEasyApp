@@ -2,25 +2,36 @@ package com.example.peazy.controllers.ui.bardetail
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
+import com.example.peazy.controllers.HomeActivity
 import com.example.peazy.controllers.ui.gallery.GalleryFragment
 import com.example.peazy.controllers.ui.gallery.ViewPagerAdapter
+import com.example.peazy.models.booktable.BookTable
 import com.example.peazy.models.nearby.Bar
+import com.example.peazy.models.signup.SignUP
+import com.example.peazy.utility.AppUtility
+import com.example.peazy.utility.Constants
+import com.example.peazy.utility.Status
+import com.example.peazy.utility.appconfig.UserPreferenc
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -30,6 +41,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.book_table_dialog.view.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.view.*
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,7 +61,8 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
     private lateinit var root: View
     var bar_detail = ArrayList<Bar>()
     var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
-
+    lateinit var progressDialog: ProgressDialog
+    var TAG = "BarDetailFragment"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,7 +92,6 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             showDialog()
         }
         mapFragment!!.getMapAsync(this)
-
         root.bt_order.setOnClickListener {
             findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
 
@@ -106,6 +118,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             ) {
             }
         })
+        sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
 
         fragments = getFragments()
         adapter = ViewPagerAdapter(this.childFragmentManager, fragments)
@@ -133,29 +146,31 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         val mAlertDialog = mBuilder.show()
         val timeSetListener =
             OnTimeSetListener { view, hourOfDay, minute ->
-                var hour = hourOfDay
-                var minutes = minute
-                var timeSet = ""
-                if (hour > 12) {
-                    hour -= 12
-                    timeSet = "PM"
-                } else if (hour === 0) {
-                    hour += 12
-                    timeSet = "AM"
-                } else if (hour === 12) {
-                    timeSet = "PM"
-                } else {
-                    timeSet = "AM"
-                }
+                /*  var hour = hourOfDay
+                  var minutes = minute
+                  var timeSet = ""
+                  if (hour > 12) {
+                      hour -= 12
+                      timeSet = "PM"
+                  } else if (hour === 0) {
+                      hour += 12
+                      timeSet = "AM"
+                  } else if (hour === 12) {
+                      timeSet = "PM"
+                  } else {
+                      timeSet = "AM"
+                  }
 
-                var min: String? = ""
-                if (minutes < 10) min = "0$minutes" else min = java.lang.String.valueOf(minutes)
+                  var min: String? = ""
+                  if (minutes < 10) min = "0$minutes" else min = java.lang.String.valueOf(minutes)
 
-                val aTime: String = StringBuilder().append(hour).append(':')
-                    .append(min).append(" ").append(timeSet).toString()
+                  val aTime: String = StringBuilder().append(hour).append(':')
+                      .append(min).append(" ").append(timeSet).toString()*/
+                var aTime: String = "" + hourOfDay + ":" + minute
                 mDialogView.txttime.setText(aTime)
             }
         val myCalendar: Calendar = Calendar.getInstance()
+        updateLabel(mDialogView.txtdate, myCalendar)
         val date =
             OnDateSetListener { view, year, monthOfYear, dayOfMonth -> // TODO Auto-generated method stub
                 myCalendar.set(Calendar.YEAR, year)
@@ -187,14 +202,14 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         }
         val edit = mDialogView.ed_num_person
         mDialogView.bt_add.setOnClickListener {
-            BarDetailFragment.num_person++
-            edit.setText("" + BarDetailFragment.num_person)
+            num_person++
+            edit.setText("" + num_person)
         }
         mDialogView.bt_minus.setOnClickListener {
-            if (BarDetailFragment.num_person > 0)
-                BarDetailFragment.num_person--
+            if (num_person > 0)
+                num_person--
 
-            edit.setText("" + BarDetailFragment.num_person)
+            edit.setText("" + num_person)
 
         }
         mDialogView.bt_booknow.setOnClickListener {
@@ -202,11 +217,24 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
             object : CountDownTimer(2000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
+                    val params = mapOf(
+                        "bar_id" to bar_detail.get(0).bar_id,
+                        "date" to mDialogView.txtdate.text.toString(),
+                        "time" to mDialogView.txttime.text.toString(),
+                        "totalPerson" to mDialogView.ed_num_person.text.toString()
+                    )
+                    println(params)
+                    if (mDialogView.ed_num_person.text.toString().toInt() > 0) {
+                        setupObservers(params)
+                    } else {
+                        setError("Person have to be grater than 0")
+                    }
                     root.alramtime.setText("" + millisUntilFinished / 1000)
                 }
 
                 override fun onFinish() {
-                    findNavController().navigate(R.id.action_barDetailFragment_to_barStatus)
+
+
                 }
             }.start()
 
@@ -225,9 +253,18 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    fun setError(msg: String) {
+        sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        AppUtility.getInstance()
+            .alertDialogWithSingleButton(
+                this.requireContext(),
+                "Error",
+                "" + msg
+            )
+    }
 
     private fun updateLabel(txtview: TextView, myCalendar: Calendar) {
-        val myFormat = "MM/dd/yy" //In which you need put here
+        val myFormat = "dd/MM/yyyy"
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         txtview.setText(sdf.format(myCalendar.getTime()))
     }
@@ -263,5 +300,88 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    private fun setupObservers(params: Map<String, String>) {
+        try {
+            viewModel.bookTable(params)
+                .observe(this, androidx.lifecycle.Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+
+                                resource.data?.let { response: Response<BookTable> ->
+                                    response.body().let { signUP ->
+                                        signUP?.let { it1 ->
+                                            sendResponse(
+                                                it1
+                                            )
+                                        }
+                                    }
+                                }
+                                Log.d(
+                                    TAG,
+                                    "Response" + resource.data?.let { response: Response<BookTable> ->
+                                        response.body().toString()
+                                    })
+                            }
+                            Status.ERROR -> {
+                                try {
+                                    progressDialog!!.dismiss()
+                                    Log.e(TAG, "" + resource.message)
+                                } catch (e: Exception) {
+                                    Log.e(TAG, e.message)
+                                }
+
+                            }
+                            Status.LOADING -> {
+                                progressDialog = ProgressDialog(this.requireContext())
+                                progressDialog!!.setMessage("loading...")
+                                progressDialog!!.show()
+
+
+                            }
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
+
+    fun sendResponse(bookTable: BookTable) {
+        try {
+            progressDialog!!.dismiss()
+            val bundle = Bundle()
+            bundle.putString("tiltle", "" + root.bartitle.text.toString())
+            bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
+            findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
+            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (bookTable.status == 200) {
+
+                val bundle = Bundle()
+                bundle.putString("tiltle", "" + root.bartitle.text.toString())
+                bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
+                findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
+                sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+
+
+            } else {
+                sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+
+                val errors = bookTable.err
+
+                AppUtility.getInstance()
+                    .alertDialogWithSingleButton(
+                        this.requireContext(),
+                        "Error",
+                        "" + errors.msg
+                    )
+
+            }
+
+
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
 
 }

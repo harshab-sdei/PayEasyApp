@@ -40,7 +40,7 @@
                     android:layout_marginTop="15dp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:text="@string/msgorder"
+                    android:text="@string/mssuccess"
                     android:layout_height="wrap_content" />
 
                 <TextView
@@ -49,12 +49,21 @@
                     android:textSize="16sp"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:text="Enter your table no."
+                    android:text="@string/msgbook"
                     android:layout_height="wrap_content" />
 
-                <EditText
+                <TextView
+                    android:layout_width="match_parent"
+                    android:textColor="@color/White"
+                    android:textSize="16sp"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/msgtablenum"
+                    android:layout_height="wrap_content" />
+
+                <TextView
                     android:layout_marginTop="20dp"
-                    android:id="@+id/table_num"
+                    android:id="@+id/tablenum"
                     android:layout_width="wrap_content"
                     android:inputType="number"
                     android:gravity="center"
@@ -63,6 +72,34 @@
                     android:textStyle="bold"
                     android:textColor="@color/White"
                     android:layout_height="wrap_content" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true">
+
+                    <LinearLayout
+                        android:id="@+id/fullscreen_content_controls"
+                        style="?android:attr/buttonBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:background="@color/black_overlay"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        tools:ignore="UselessParent">
+
+                        <Button
+                            android:id="@+id/dummy_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/dummy_button"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+                </FrameLayout>
             </LinearLayout>
 
             <Button
@@ -75,38 +112,11 @@
                 android:textColor="@color/orange"
                 android:layout_marginBottom="20dp"
                 android:layout_height="wrap_content"
-                android:text="@string/odernow" />
+                android:text="@string/thanksmsg" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?android:attr/buttonBarStyle"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-            <Button
-                android:visibility="gone"
-                android:id="@+id/dummy_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
-
-        </LinearLayout>
-    </FrameLayout>
 
 </FrameLayout>

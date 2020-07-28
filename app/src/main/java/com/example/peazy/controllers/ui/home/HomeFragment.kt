@@ -235,8 +235,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         mMap.uiSettings.setMapToolbarEnabled(false)
 
 
-        // Add a marker in Sydney and move the camera
-
         try {
             for (i in 0 until listbar.size) {
                 createMarker(

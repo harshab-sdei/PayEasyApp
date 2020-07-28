@@ -266,5 +266,7 @@ class HomeActivity : AppCompatActivity() {
 
     //web service call
 
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 }

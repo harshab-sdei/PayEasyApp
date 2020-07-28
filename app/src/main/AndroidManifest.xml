@@ -23,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".controllers.ui.menu.Menu"></activity>
+        <activity android:name=".controllers.ui.addcart.AddCart"></activity>
+        <activity android:name=".controllers.ui.menu.Menu" />
         <activity android:name=".controllers.ui.bardetail.BarDetail" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -47,7 +48,7 @@
             android:name=".controllers.HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".controllers.singnup.SignUpActivity"
             android:screenOrientation="portrait" />
