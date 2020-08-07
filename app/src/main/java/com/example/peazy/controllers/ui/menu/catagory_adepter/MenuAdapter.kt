@@ -69,5 +69,4 @@ class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     }
 
-
 }

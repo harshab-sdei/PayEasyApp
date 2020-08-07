@@ -97,7 +97,6 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$room_version"
-
     //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7'
@@ -136,6 +135,9 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
     //view pager
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.0'
+    //push notification
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

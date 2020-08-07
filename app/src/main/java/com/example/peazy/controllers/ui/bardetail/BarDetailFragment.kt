@@ -5,7 +5,6 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
-import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.format.DateFormat
@@ -16,22 +15,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
-import com.example.peazy.controllers.HomeActivity
-import com.example.peazy.controllers.ui.gallery.GalleryFragment
-import com.example.peazy.controllers.ui.gallery.ViewPagerAdapter
+import com.example.peazy.controllers.ui.bardetail.slidephoto_viewpager.GalleryFragment
+import com.example.peazy.controllers.ui.bardetail.slidephoto_viewpager.ViewPagerAdapter
 import com.example.peazy.models.booktable.BookTable
 import com.example.peazy.models.nearby.Bar
-import com.example.peazy.models.signup.SignUP
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Status
-import com.example.peazy.utility.appconfig.UserPreferenc
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -77,55 +72,65 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.barmaps) as SupportMapFragment?
+        try {
+            bar_detail =
+                (requireArguments().getSerializable("bardata") as ArrayList<Bar>?)!!
+            root.bartitle.text = "" + bar_detail.get(0).name
+            root._rating.setText("" + bar_detail.get(0).vat)
+            root.palce_name.setText(
+                "" + bar_detail.get(0).address.street + "," + bar_detail.get(
+                    0
+                ).address.city
+            )
+            root.review.setText("" + bar_detail.get(0).total_reviews + " Reviews")
+            root.country.setText("Commission " + bar_detail!!.get(0).p_commission + " ")
+            root.detail.setText("" + bar_detail!!.get(0).description)
+            root.time.setText("Open . " + bar_detail!!.get(0).hours)
+            Constants.vat = bar_detail.get(0).vat.toDouble()
+            Constants.bar_id = bar_detail.get(0).bar_id
+            val bt_booknow = root.findViewById<Button>(R.id.book_table) as Button
+            bt_booknow.setOnClickListener {
+                showDialog()
+            }
+            mapFragment!!.getMapAsync(this)
+            root.bt_order.setOnClickListener {
 
-        bar_detail =
-            (requireArguments().getSerializable("bardata") as ArrayList<Bar>?)!!
-        root.bartitle.setText("" + bar_detail!!.get(0).name)
-        root._rating.setText("" + bar_detail!!.get(0).vat)
-        root.palce_name.setText("" + bar_detail!!.get(0).address.street + "," + bar_detail!!.get(0).address.city)
-        root.review.setText("" + bar_detail!!.get(0).total_reviews + " Reviews")
-        root.country.setText("Commission " + bar_detail!!.get(0).p_commission + " ")
-        root.detail.setText("" + bar_detail!!.get(0).description)
-        root.time.setText("Open . " + bar_detail!!.get(0).hours)
-        val bt_booknow = root.findViewById<Button>(R.id.book_table) as Button
-        bt_booknow.setOnClickListener {
-            showDialog()
-        }
-        mapFragment!!.getMapAsync(this)
-        root.bt_order.setOnClickListener {
-            findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
+                findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
 
-        }
-        sheetBehavior = BottomSheetBehavior.from(root.bottom_sheet)
-        sheetBehavior!!.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
+            }
+            sheetBehavior = BottomSheetBehavior.from(root.bottom_sheet)
+            sheetBehavior!!.setBottomSheetCallback(object :
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                        }
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                        }
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                        }
+                        BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> sheetBehavior!!.setHideable(
+                            false
+                        )
                     }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                    }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                    }
-                    BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> sheetBehavior!!.setHideable(
-                        false
-                    )
                 }
-            }
 
-            override fun onSlide(
-                bottomSheet: View,
-                slideOffset: Float
-            ) {
-            }
-        })
-        sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                override fun onSlide(
+                    bottomSheet: View,
+                    slideOffset: Float
+                ) {
+                }
+            })
+            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
 
-        fragments = getFragments()
-        adapter = ViewPagerAdapter(this.childFragmentManager, fragments)
-        viewPager.adapter = adapter
-        dots_indicator.setViewPager(viewPager)
+            fragments = getFragments()
+            adapter = ViewPagerAdapter(this.childFragmentManager, fragments)
+            viewPager.adapter = adapter
+            dots_indicator.setViewPager(viewPager)
 
-        adapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
+        } catch (e: java.lang.Exception) {
+        }
     }
 
     private fun getFragments(): List<Fragment> {
@@ -172,7 +177,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         val myCalendar: Calendar = Calendar.getInstance()
         updateLabel(mDialogView.txtdate, myCalendar)
         val date =
-            OnDateSetListener { view, year, monthOfYear, dayOfMonth -> // TODO Auto-generated method stub
+            OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 myCalendar.set(Calendar.YEAR, year)
                 myCalendar.set(Calendar.MONTH, monthOfYear)
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)

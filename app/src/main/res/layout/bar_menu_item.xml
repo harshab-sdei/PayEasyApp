@@ -37,6 +37,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="5dp"
                 android:text="test"
+                android:maxLines="1"
                 android:textStyle="bold"
                 android:gravity="left"
                 android:layout_gravity="left"
@@ -55,8 +56,10 @@
                 android:paddingRight="10dp"
                 android:paddingBottom="5dp"
                 android:id="@+id/ite_desc"
+                android:maxLines="2"
+                android:scrollbars="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="30dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

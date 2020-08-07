@@ -14,12 +14,14 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
+import com.example.peazy.controllers.ui.menu.MenuFragment
 import com.example.peazy.models.nearby.Bar
 import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.utility.AppUtility
@@ -96,6 +98,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         homeViewModel =
             ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
 
         if (!checkLocationPermission()) {
 
@@ -239,12 +242,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
             for (i in 0 until listbar.size) {
                 createMarker(
                     i,
-                    listbar.get(i).address.latlong.coordinate.get(0),
                     listbar.get(i).address.latlong.coordinate.get(1),
+                    listbar.get(i).address.latlong.coordinate.get(0),
                     listbar.get(i).name,
-                    listbar.get(i).address.street + ", " + listbar.get(i).address.city + ", " + listbar.get(
-                        i
-                    ).address.zip_code
+                    listbar.get(i).address.street + ",\n" + listbar.get(i).address.city
                 )
             }
         } catch (e: Exception) {
@@ -253,17 +254,17 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         mMap.moveCamera(
             CameraUpdateFactory.newLatLng(
                 LatLng(
-                    -110.8571443,
-                    32.4586858
+                    listbar.get(0).address.latlong.coordinate.get(1),
+                    listbar.get(0).address.latlong.coordinate.get(0)
                 )
             )
         )
         mMap.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
-                    -110.8571443,
-                    32.4586858
-                ), 10f
+                    listbar.get(0).address.latlong.coordinate.get(1),
+                    listbar.get(0).address.latlong.coordinate.get(0)
+                ), 8f
             )
         )
 
@@ -272,7 +273,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         mMap.setOnInfoWindowClickListener(object : GoogleMap.OnInfoWindowClickListener {
             override fun onInfoWindowClick(marker: Marker) {
                 try {
-                    val title = marker.title
+                    Constants.addcartlist.clear()
+                    MenuFragment.itemCount = 0
+                    MenuFragment.price_total = 0.0
+
                     val tagid: Int = marker.tag as Int
                     val bundle = Bundle()
                     var list = ArrayList<Bar>()
@@ -302,6 +306,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
                 .title(title)
                 .snippet(snippet)
                 .icon(icon)
+
         )
         marker.tag = tagid
 

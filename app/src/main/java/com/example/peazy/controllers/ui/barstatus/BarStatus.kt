@@ -10,14 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import com.example.peazy.R
 import com.example.peazy.models.reserve_table.ReserveTable
 import com.example.peazy.utility.AppUtility
+import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Status
 import kotlinx.android.synthetic.main.bar_status_fragment.view.*
-import kotlinx.android.synthetic.main.main_fragment.view.*
 import retrofit2.Response
 
 class BarStatus : Fragment() {
@@ -111,7 +111,16 @@ class BarStatus : Fragment() {
 
                 val bundle = Bundle()
                 bundle.putString("tableNo", "" + root!!.table_num.text.toString())
-                findNavController().navigate(R.id.action_barStatus_to_successStatus, bundle)
+                val navOptions: NavOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.barDetailFragment, true)
+                    .build()
+                Constants.tableNo = root!!.table_num.text.toString()
+
+                findNavController().navigate(
+                    R.id.action_barStatus_to_successStatus,
+                    bundle,
+                    navOptions
+                )
 
             } else {
 
@@ -125,7 +134,6 @@ class BarStatus : Fragment() {
                     )
 
             }
-
 
         } catch (e: Exception) {
             Log.e(TAG, e.message)

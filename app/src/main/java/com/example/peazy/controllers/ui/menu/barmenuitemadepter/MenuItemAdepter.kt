@@ -31,6 +31,9 @@ class MenuItemAdepter(var item: List<Item>, val clickLister: (Item) -> Unit) :
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.view.additem.setOnClickListener {
+            MenuFragment.itemCount++
+            item.get(position).num_of_unit++
+            MenuFragment.price_total += item.get(position).price
             clickLister(item.get(position))
             row_index = position
             notifyDataSetChanged()
@@ -64,7 +67,7 @@ class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         }
         view.itemname.text = item.name
         view.ite_desc.text = item.description
-        view.item_price.text = "$" + item.price
+        view.item_price.text = Constants.currency + item.price
     }
 
 

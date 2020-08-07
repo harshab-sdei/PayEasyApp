@@ -31,7 +31,6 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         databinding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up)
-        ///modelViewFactory = SignUpViewModelFactory()
         viewmodels = ViewModelProvider(this).get(SignUpViewMode::class.java)
         databinding.btLogin.setOnClickListener {
             val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
@@ -155,11 +154,6 @@ class SignUpActivity : AppCompatActivity() {
 
             if (signUP.status == 200) {
 
-               /* AppUtility.getInstance().alertDialogWithSingleButton(
-                    applicationContext,
-                    "Sign Up",
-                    "Successfully Sign Up"
-                )*/
                 UserPreferenc.setBooleanPreference(Constants.IS_USER_Login,true)
                 val intent = Intent(this@SignUpActivity, HomeActivity::class.java)
                 startActivity(intent)

@@ -3,9 +3,10 @@ package com.example.peazy.database.db
 import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteOpenHelper
+import com.example.peazy.models.menu_item.Item
 import com.example.peazy.utility.Constants
 
-//@Database(entities = [Subscriber::class], version = 1)
+//@Database(entities = [Item::class], version = 1)
 abstract class PeazyDatabase : RoomDatabase(){
     companion object {
         @Volatile

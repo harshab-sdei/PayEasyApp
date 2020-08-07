@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -20,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -27,7 +27,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.peazy.R
 import com.example.peazy.models.logout.Logout
-import com.example.peazy.models.signup.SignUP
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Resource
@@ -72,7 +71,8 @@ class HomeActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home
+                R.id.nav_home,
+                R.id.nav_Profile
 
             ), drawerLayout
         )
@@ -134,6 +134,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
     private fun setLogoutObservers() {
         try {
             logoutUser()
@@ -143,21 +144,19 @@ class HomeActivity : AppCompatActivity() {
                             Status.SUCCESS -> {
 
                                 resource.data?.let { response: Response<Logout> ->
-                                    response.body().let { Logout ->
-                                        Logout?.let { it1 ->
-                                            sendResponse(
-                                                it1
-                                            )
+                                    response.body().let { logout ->
+                                        logout?.let { it1 ->
+                                            sendResponse(it1)
                                         }
                                     }
                                 }
-                                if(resource.data?.code()==404)
-                                {
-                                    progressDialog!!.dismiss()
+                                /*  if(resource.data?.code()==404)
+                                  {
+                                      progressDialog!!.dismiss()
 
-                                    Toast.makeText(this,"Internal Server Error",Toast.LENGTH_LONG).show()
+                                      Toast.makeText(this,"Internal Server Error",Toast.LENGTH_LONG).show()
 
-                                }
+                                  }*/
                                 Log.d(
                                     "TAG",
                                     "Response" + resource.data?.let { response: Response<Logout> ->
@@ -193,8 +192,6 @@ class HomeActivity : AppCompatActivity() {
             progressDialog!!.dismiss()
 
             if (signUP.status == 200) {
-
-
                     UserPreferenc.setBooleanPreference(Constants.IS_USER_Login,false)
                     finish()
 
@@ -206,7 +203,6 @@ class HomeActivity : AppCompatActivity() {
                         "Error",
                         "Error in  Sign Up"
                     )
-
                 }else {
                     AppUtility.getInstance()
                         .alertDialogWithSingleButton(
@@ -264,9 +260,4 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    //web service call
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
 }

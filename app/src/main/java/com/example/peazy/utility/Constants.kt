@@ -1,28 +1,37 @@
 package com.example.peazy.utility
 
+import com.example.peazy.models.addcart.Add_Item
+import java.util.ArrayList
+
 class Constants {
     companion object {
-     const val DATABASE_NAME = "payEasy_database."
-      val nearByplaceAPI="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=658964962677-c0ui9tlef7688tu2raijhq1mhub28saj.apps.googleusercontent.com"
+        var addcartlist = ArrayList<Add_Item>()
+        var vat: Double = 0.0
+        var servicefree: Double = 5.0
+        var tableNo: String = "00"
+        var bar_id: String = ""
+        var currency: String = "$"
+        const val DATABASE_NAME = "payEasy_database."
+        var email_error = "Email Address is invalid."
+        var pws_error = "Password is not valid."
+        var person_name_error = "Full Name is not correct."
+        var card_number = "Please Enter valid Card Number."
+        var valid_date = "Please Enter valid Date."
+        var valid_CVV = "Please Enter valid CVV."
 
-     var email_error="Email Address is invalid."
-     var pws_error="Password is not valid."
-     var person_name_error="Full Name is not correct."
+        val IS_USER_Login: String = "is_user_login"
 
-     val IS_USER_Login: String = "is_user_login"
-
-     /*API Parameters Name */
-     var NAME: String = "name"
-     var EMAIL: String = "email"
-     var PASSWORD: String = "password"
-     var LANGUAGE_SEL: String = "language_selected"
-     var DEVICE_TOKEN: String = "device_token"
+        /*API Parameters Name */
+        var NAME: String = "name"
+        var EMAIL: String = "email"
+        var PASSWORD: String = "password"
+        var LANGUAGE_SEL: String = "language_selected"
+        var DEVICE_TOKEN: String = "device_token"
         var ACCESS_TOKEN: String = "access_token"
         var PLATFORM: String = "platform"
 
 
         val googleapi: String = "AIzaSyBKum4xy87zoNTlYlXFJsGYFiXmL9aGW_k"
-        val radius: Int = 3000;
 
 
         const val ACCESS_FINE_LOCATION = "access fine location"

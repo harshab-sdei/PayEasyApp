@@ -11,12 +11,14 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peazy.R
 import com.example.peazy.controllers.ui.menu.barmenuitemadepter.MenuItemAdepter
 import com.example.peazy.controllers.ui.menu.catagory_adepter.MenuAdapter
 import com.example.peazy.controllers.ui.menu.subcategory_adepter.SubCategoryAdepter
+import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.category.Category
 import com.example.peazy.models.category.MenuCategory
 import com.example.peazy.models.menu_item.BarMenuItem
@@ -38,12 +40,12 @@ class MenuFragment : Fragment() {
     companion object {
         fun newInstance() = MenuFragment()
         var itemCount: Int = 0
-        var price_total: Int = 0
+        var price_total: Double = 0.0
     }
 
+    var bar_menu_item = ArrayList<Item>()
     var listcat = ArrayList<Category>()
     var listsubcat = ArrayList<SubcategoryX>()
-    var bar_menu_item = ArrayList<Item>()
     var catid: String? = null
     var subcatid: String? = null
     lateinit var root: View
@@ -57,6 +59,7 @@ class MenuFragment : Fragment() {
         root = inflater.inflate(R.layout.main_fragment2, container, false)
         return root
     }
+
 
     var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -101,8 +104,19 @@ class MenuFragment : Fragment() {
             ) {
             }
         })
-        sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
 
+        try {
+            root.item_total.text = "" + itemCount + " Item"
+            root.total_price.text = "" + price_total
+        } catch (e: java.lang.Exception) {
+        }
+        sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
+        root.bt_add_in_cart.setOnClickListener {
+
+            var bundle = Bundle()
+            bundle.putString("bar_id", Constants.bar_id)
+            findNavController().navigate(R.id.action_menuFragment_to_addCartFragment, bundle)
+        }
     }
 
     fun listItemClick(category: Category) {
@@ -111,33 +125,59 @@ class MenuFragment : Fragment() {
         var params = mapOf("sort" to "1")
         Log.e(TAG, "Full URL=" + fullUrl)
         setSubCategoryObservers(fullUrl, params)
-        // Toast.makeText(this@,fruitList.fruitname, Toast.LENGTH_LONG).show()
     }
 
     fun subCat_listItemClick(subCategory: SubcategoryX) {
         subcatid = subCategory.subcat_id
 
         var params = mapOf(
-            "bar_id" to "5f18848084a54e45dc164022",
+            "bar_id" to "" + Constants.bar_id,
             "cat_id" to "" + catid,
             "subcat_id" to "" + subcatid,
             "sort" to "1"
         )
         println(params)
-
         setMenuItemObservers(params)
     }
 
     fun barMenulistItemClick(item: Item) {
-        itemCount++
+        var isinsert = false
 
-        root.item_total.text = "" + itemCount + " Item"
-        price_total += item.price
-        root.total_price.text = "" + price_total
+        for (additem in Constants.addcartlist) {
 
-        sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
+            try {
+                if (additem.item_id == item.item_id && item.price > 0) {
+                    additem.num_of_unit++
+                    isinsert = true
+                }
+
+            } catch (e: java.lang.Exception) {
+            }
+        }
+        if (!isinsert) {
+            var addItem = Add_Item(
+                item.image,
+                item.item_id,
+                item.name,
+                item.price,
+                item.num_of_unit
+            )
+            Constants.addcartlist.add(addItem)
+        }
 
 
+        print("add Item size" + Constants.addcartlist.size)
+        updateOder()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            root.item_total.text = "" + itemCount + " Item"
+            root.total_price.text = "" + price_total
+        } catch (e: java.lang.Exception) {
+        }
     }
 
     private fun setMenuCategoryObservers(params: Map<String, String>) {
@@ -174,10 +214,9 @@ class MenuFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
-
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
-
+                                bar_menu_item.clear()
 
                             }
                         }
@@ -261,9 +300,9 @@ class MenuFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
-
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
+                                bar_menu_item.clear()
 
 
                             }
@@ -290,7 +329,7 @@ class MenuFragment : Fragment() {
                 subcatid = subCategory.res.subcategory.get(0).subcat_id
 
                 var params = mapOf(
-                    "bar_id" to "5f18848084a54e45dc164022",
+                    "bar_id" to "" + Constants.bar_id,
                     "cat_id" to "" + catid,
                     "subcat_id" to "" + subcatid,
                     "sort" to "1"
@@ -391,5 +430,11 @@ class MenuFragment : Fragment() {
         }
     }
 
+    fun updateOder() {
+        root.item_total.text = "" + itemCount + " Item"
+        root.total_price.text = Constants.currency + price_total
+        sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
+
+    }
 
 }

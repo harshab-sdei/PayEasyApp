@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
+                android:id="@+id/bt_add_in_cart"
                 android:background="@drawable/button_dark_orange"
                 android:gravity="center"
                 android:orientation="horizontal">
