@@ -316,9 +316,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
                                 resource.data?.let { response: Response<BookTable> ->
                                     response.body().let { signUP ->
                                         signUP?.let { it1 ->
-                                            sendResponse(
-                                                it1
-                                            )
+                                            sendResponse(it1)
                                         }
                                     }
                                 }
@@ -341,8 +339,6 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
                                 progressDialog = ProgressDialog(this.requireContext())
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
-
-
                             }
                         }
                     }
@@ -355,11 +351,11 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
     fun sendResponse(bookTable: BookTable) {
         try {
             progressDialog!!.dismiss()
-            val bundle = Bundle()
-            bundle.putString("tiltle", "" + root.bartitle.text.toString())
-            bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
-            findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
-            sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+            /* val bundle = Bundle()
+             bundle.putString("tiltle", "" + root.bartitle.text.toString())
+             bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
+             findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
+             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED*/
             if (bookTable.status == 200) {
 
                 val bundle = Bundle()

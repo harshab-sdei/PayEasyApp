@@ -7,9 +7,12 @@ import com.example.peazy.models.editprofile.EditProfile
 import com.example.peazy.models.logout.Logout
 import com.example.peazy.models.menu_item.BarMenuItem
 import com.example.peazy.models.nearby.NearByBar
+import com.example.peazy.models.payorder.PayOrder
 import com.example.peazy.models.reserve_table.ReserveTable
 import com.example.peazy.models.signup.SignUP
 import com.example.peazy.models.subcategory.SubCategory
+import com.example.peazy.models.verifypay.VerifyPay
+import com.example.peazy.models.viewcard.ViewCard
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -55,9 +58,17 @@ interface WebServiceApi {
     @POST("/api/v2/user/card/add")
     suspend fun addCard(@FieldMap params: Map<String, String>): Response<AddPayCard>
 
+    @GET("/api/v2/user/card/view")
+    suspend fun viewCard(): Response<ViewCard>
+
+
     @FormUrlEncoded
-    @POST("/api/v2/user/reserve/table")
-    suspend fun pay(@FieldMap params: Map<String, String>): Response<AddPayCard>
+    @POST("/api/v2/user/pay")
+    suspend fun payOrder(@FieldMap params: Map<String, String>): Response<PayOrder>
+
+    @FormUrlEncoded
+    @POST("/api/v2/user/verify/pay")
+    suspend fun verifyPay(@Field("stripe_token") striptoken: String): Response<VerifyPay>
 
 
     @GET("/api/v2/category/list")

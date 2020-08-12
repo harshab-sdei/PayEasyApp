@@ -90,10 +90,26 @@
     <fragment
         android:id="@+id/paymentMethodFragment"
         android:name="com.example.peazy.controllers.paymentmethod.PaymentMethodFragment"
-        android:label="PaymentMethodFragment" />
+        android:label="@string/titleMethod">
+        <action
+            android:id="@+id/action_paymentMethodFragment_to_orderAcceptFragment"
+            app:destination="@id/orderAcceptFragment" />
+    </fragment>
     <fragment
         android:id="@+id/nav_Profile"
         android:name="com.example.peazy.controllers.edit_profile.EditProfileFragment"
         android:label="edit_profile_fragment"
         tools:layout="@layout/edit_profile_fragment" />
+    <fragment
+        android:id="@+id/orderAcceptFragment"
+        android:name="com.example.peazy.controllers.ui.accept_oder.OrderAcceptFragment"
+        android:label="order_accept_fragment"
+        tools:layout="@layout/order_accept_fragment">
+        <action
+            android:id="@+id/action_orderAcceptFragment_to_addCartFragment"
+            app:destination="@id/addCartFragment" />
+        <action
+            android:id="@+id/action_orderAcceptFragment_to_menuFragment"
+            app:destination="@id/menuFragment" />
+    </fragment>
 </navigation>

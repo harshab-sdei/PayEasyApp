@@ -25,9 +25,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name="com.example.peazy.controllers.ui.accept_oder.OderAcceptStatus"></activity>
-
-
+        <activity android:name=".controllers.choosepayment.ChoosePayMethod"></activity>
         <activity android:name=".controllers.ui.addcart.AddCart" />
         <activity android:name=".controllers.ui.menu.Menu" />
         <activity android:name=".controllers.ui.bardetail.BarDetail" />
@@ -47,12 +45,20 @@
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name="com.example.peazy.services.MyFirebaseMessagingService"
+            android:name=".services.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/logo" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/orange" />
 
         <activity
             android:name=".MapsActivity"
@@ -85,7 +91,6 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="${crashlyticsEnabled}" />
-
     </application>
 
 </manifest>

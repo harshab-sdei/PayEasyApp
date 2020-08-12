@@ -18,6 +18,8 @@ class Constants {
         var card_number = "Please Enter valid Card Number."
         var valid_date = "Please Enter valid Date."
         var valid_CVV = "Please Enter valid CVV."
+        var totalamount = "totalamount"
+        var stripToken: String? = ""
 
         val IS_USER_Login: String = "is_user_login"
 

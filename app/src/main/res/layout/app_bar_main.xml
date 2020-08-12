@@ -16,7 +16,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_close_24dp"
             android:textStyle="bold"
             android:background="@android:color/transparent"
             />

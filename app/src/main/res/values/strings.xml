@@ -68,5 +68,10 @@
     <string name="menutitle">What would you like to order?</string>
     <string name="notifications_admin_channel_name">peazychannelname</string>
     <string name="notifications_admin_channel_description">peazydescription</string>
+    <string name="confimorder">Confirm Order</string>
+    <string name="inctax">Inc. tax</string>
+    <string name="choosepaymethod_title">Choose your\n payment method</string>
+    <string name="Creditcard">Credit card</string>
+    <string name="SamsungPay">Samsung Pay</string>
 
 </resources>

@@ -154,10 +154,20 @@ class SignUpActivity : AppCompatActivity() {
 
             if (signUP.status == 200) {
 
-                UserPreferenc.setBooleanPreference(Constants.IS_USER_Login,true)
-                val intent = Intent(this@SignUpActivity, HomeActivity::class.java)
-                startActivity(intent)
-                finish()
+                if (signUP.res.access_token.isEmpty()) {
+                    AppUtility.getInstance().alertDialogWithSingleButton(
+                        applicationContext,
+                        "Alert",
+                        "Please verify user and Login app"
+                    )
+                    val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
+                    val intent = Intent(this@SignUpActivity, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
 
             } else {
                 val errors = signUP.err
