@@ -1,5 +1,6 @@
 package com.example.peazy.controllers.ui.menu
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.peazy.utility.Resource
@@ -7,6 +8,8 @@ import com.example.peazy.webservices.RetrofitInsatance
 import kotlinx.coroutines.Dispatchers
 
 class MainViewModel : ViewModel() {
+    var itemCount = MutableLiveData<Int>()
+
     fun getCategoryList(params: Map<String, String>) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
@@ -24,6 +27,23 @@ class MainViewModel : ViewModel() {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
     }
+
+    fun getSubSubCategory(path: String, params: Map<String, String>) = liveData(Dispatchers.IO) {
+        emit(Resource.loading(data = null))
+        try {
+            emit(
+                Resource.success(
+                    data = RetrofitInsatance.apiService.getSubSubCategory(
+                        path,
+                        params
+                    )
+                )
+            )
+        } catch (exception: Exception) {
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
+
 
     fun getMenuItem(params: Map<String, String>) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))

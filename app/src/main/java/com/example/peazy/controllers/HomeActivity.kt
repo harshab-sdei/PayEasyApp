@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -19,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
-import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -36,7 +34,6 @@ import com.example.peazy.webservices.RetrofitInsatance
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_home.view.*
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 
@@ -73,18 +70,45 @@ class HomeActivity : AppCompatActivity() {
             setOf(
                 R.id.nav_home,
                 R.id.nav_Profile
-
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        navView.logout.setOnClickListener {
-            alertforLogout("Are You Sure, you want to logout?", "Confirm Alert")
 
-        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getLocationPermission()
         }
+
+        navView.setNavigationItemSelectedListener {
+            val id: Int = it.getItemId()
+
+            if (id == R.id.nav_logout) {
+                alertforLogout("Are You Sure, you want to logout?", "Confirm Alert")
+
+            }
+            true
+        }
+
+        /*navView.setNavigationItemSelectedListener { menuItem -> //Checking if the item is in checked state or not, if not set it to checked state.
+            if (menuItem.isChecked()) menuItem.setChecked(false) else menuItem.setChecked(true)
+
+            //Closing drawer on item click
+            drawerLayout.closeDrawers()
+            when (menuItem.getItemId()) {
+
+                else -> {
+                    Toast.makeText(
+                        applicationContext,
+                        resources.getString(R.string.drawer_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    true
+                }
+            }
+        }*/
+
+
     }
 
     /* override fun onCreateOptionsMenu(menu: Menu): Boolean {

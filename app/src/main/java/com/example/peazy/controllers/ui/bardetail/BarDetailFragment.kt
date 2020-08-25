@@ -1,5 +1,6 @@
 package com.example.peazy.controllers.ui.bardetail
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
@@ -67,6 +68,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
@@ -85,7 +87,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             root.review.setText("" + bar_detail.get(0).total_reviews + " Reviews")
             root.country.setText("Commission " + bar_detail!!.get(0).p_commission + " ")
             root.detail.setText("" + bar_detail!!.get(0).description)
-            root.time.setText("Open . " + bar_detail!!.get(0).hours)
+            root.time.setText("Open . " + bar_detail.get(0).hours)
             Constants.vat = bar_detail.get(0).vat.toDouble()
             Constants.bar_id = bar_detail.get(0).bar_id
             val bt_booknow = root.findViewById<Button>(R.id.book_table) as Button
@@ -285,8 +287,8 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         val icon =
             BitmapDescriptorFactory.fromResource(R.drawable.pin)
         val sydney = LatLng(
-            bar_detail.get(0).address.latlong.coordinate.get(0),
-            bar_detail.get(0).address.latlong.coordinate.get(1)
+            bar_detail.get(0).address.latlong.coordinate.get(1),
+            bar_detail.get(0).address.latlong.coordinate.get(0)
         )
         val melbourne = mMap.addMarker(
             MarkerOptions()

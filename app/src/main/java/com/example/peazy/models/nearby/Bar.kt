@@ -2,6 +2,7 @@ package com.example.peazy.models.nearby
 
 data class Bar(
     val address: Address,
+    val bar_id: String,
     val description: String,
     val distance: Double,
     val hours: String,
@@ -9,6 +10,5 @@ data class Bar(
     val name: String,
     val p_commission: Int,
     val total_reviews: Int,
-    val bar_id: String,
     val vat: Int
 )

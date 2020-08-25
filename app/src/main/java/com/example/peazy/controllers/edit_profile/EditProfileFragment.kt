@@ -8,10 +8,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.example.peazy.R
+import com.example.peazy.databinding.EditProfileFragmentBinding
+import com.example.peazy.databinding.MainFragment3Binding
 import com.example.peazy.models.addpaycard.AddPayCard
 import com.example.peazy.models.editprofile.EditProfile
 import com.example.peazy.utility.AppUtility
+import com.example.peazy.utility.Constants
 import retrofit2.Response
 
 class EditProfileFragment : Fragment() {
@@ -23,17 +27,55 @@ class EditProfileFragment : Fragment() {
     var TAG = "EditProfileFragment"
     private lateinit var viewModel: EditProfileViewModel
     lateinit var progressDialog: ProgressDialog
+    lateinit var databinding: EditProfileFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.edit_profile_fragment, container, false)
+        databinding =
+            DataBindingUtil.inflate(inflater, R.layout.edit_profile_fragment, container, false)
+
+        return databinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(EditProfileViewModel::class.java)
+
+        databinding.btLogin.setOnClickListener {
+            if (AppUtility.getInstance()
+                    .validateLetters(databinding.editTextname.text.toString()) &&
+                AppUtility.getInstance()
+                    .isPasswordValid(databinding.editTextpassword.text.toString())
+            ) {
+
+                val params = mapOf(
+                    "name" to databinding.editTextname.text.toString(),
+                    "password" to databinding.editTextpassword.text.toString()
+                )
+                setObservers(params)
+
+            } else {
+                if (!AppUtility.getInstance()
+                        .validateLetters(databinding.editTextname.text.toString())
+                ) {
+                    databinding.editTextname.setError(Constants.email_error)
+                } else {
+                    databinding.editTextname.setError(null)
+                }
+
+                if (!AppUtility.getInstance()
+                        .isPasswordValid(databinding.editTextpassword.text.toString())
+                ) {
+                    databinding.editTextpassword.setError(Constants.pws_error)
+                } else {
+                    databinding.editTextpassword.setError(null)
+
+                }
+            }
+
+        }
     }
 
 
@@ -94,6 +136,13 @@ class EditProfileFragment : Fragment() {
                             this.requireContext(),
                             "Alert",
                             "User is already deleted"
+                        )
+                } else {
+                    AppUtility.getInstance()
+                        .alertDialogWithSingleButton(
+                            this.requireContext(),
+                            "Alert",
+                            "Successfully Save to changes"
                         )
                 }
 

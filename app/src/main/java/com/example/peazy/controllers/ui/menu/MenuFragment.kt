@@ -1,38 +1,40 @@
 package com.example.peazy.controllers.ui.menu
 
 import android.app.ProgressDialog
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peazy.R
-import com.example.peazy.controllers.ui.menu.barmenuitemadepter.MenuItemAdepter
 import com.example.peazy.controllers.ui.menu.catagory_adepter.MenuAdapter
+import com.example.peazy.controllers.ui.menu.sub_sub_category.SubSubCategoryAdepter
 import com.example.peazy.controllers.ui.menu.subcategory_adepter.SubCategoryAdepter
 import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.category.Category
 import com.example.peazy.models.category.MenuCategory
-import com.example.peazy.models.menu_item.BarMenuItem
 import com.example.peazy.models.menu_item.Item
+import com.example.peazy.models.menuitems.MenuItems
 import com.example.peazy.models.subcategory.SubCategory
 import com.example.peazy.models.subcategory.SubcategoryX
+import com.example.peazy.models.subsubcategory.SubItem
+import com.example.peazy.models.subsubcategory.SubSubCategory
+import com.example.peazy.models.subsubcategory.Subcategory
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.appconfig.UserPreferenc
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import kotlinx.android.synthetic.main.main_fragment2.view.*
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Response
-import java.util.*
 
 
 class MenuFragment : Fragment() {
@@ -41,14 +43,18 @@ class MenuFragment : Fragment() {
         fun newInstance() = MenuFragment()
         var itemCount: Int = 0
         var price_total: Double = 0.0
+        lateinit var root: View
+        var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
+
+
     }
 
-    var bar_menu_item = ArrayList<Item>()
+    var item1: String? = null
     var listcat = ArrayList<Category>()
     var listsubcat = ArrayList<SubcategoryX>()
+    var listsubsubcat = ArrayList<Subcategory>()
     var catid: String? = null
     var subcatid: String? = null
-    lateinit var root: View
     lateinit var progressDialog: ProgressDialog
     private lateinit var viewModel: MainViewModel
     var TAG: String = "MenuFragment"
@@ -61,7 +67,6 @@ class MenuFragment : Fragment() {
     }
 
 
-    var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
@@ -72,16 +77,13 @@ class MenuFragment : Fragment() {
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
         root.recleview_subcat.layoutManager =
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        var layoutManager: GridLayoutManager? = null
-        if (getResources()
-                .getConfiguration().orientation === Configuration.ORIENTATION_PORTRAIT
-        ) {
-            layoutManager = GridLayoutManager(this.requireContext(), 3)
-        } else {
-            layoutManager = GridLayoutManager(this.requireContext(), 7)
-        }
-        root.recleview_menuitem!!.setLayoutManager(layoutManager)
+        root.recleview_subsubcat.layoutManager =
+            LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
 
+
+        viewModel.itemCount.observe(this, Observer {
+            updateOder()
+        })
 
         sheetBehavior!!.setBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -130,14 +132,26 @@ class MenuFragment : Fragment() {
     fun subCat_listItemClick(subCategory: SubcategoryX) {
         subcatid = subCategory.subcat_id
 
-        var params = mapOf(
+
+        var params1 = mapOf(
             "bar_id" to "" + Constants.bar_id,
             "cat_id" to "" + catid,
-            "subcat_id" to "" + subcatid,
+            "sub_cat_id" to "" + subcatid,
             "sort" to "1"
         )
-        println(params)
-        setMenuItemObservers(params)
+        setMenuItemObservers(params1)
+        println(params1)
+
+
+    }
+
+    /*  fun inititemCount()
+      {
+          viewModel.itemCount.value= itemCount
+      }*/
+    fun subSubCat_listItemClick(subSubCategory: Subcategory) {
+        subcatid = subSubCategory.subcat_id
+
     }
 
     fun barMenulistItemClick(item: Item) {
@@ -216,7 +230,6 @@ class MenuFragment : Fragment() {
                                 progressDialog = ProgressDialog(this.requireContext())
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
-                                bar_menu_item.clear()
 
                             }
                         }
@@ -302,7 +315,6 @@ class MenuFragment : Fragment() {
                                 progressDialog = ProgressDialog(this.requireContext())
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
-                                bar_menu_item.clear()
 
 
                             }
@@ -319,7 +331,6 @@ class MenuFragment : Fragment() {
             progressDialog!!.dismiss()
 
             if (subCategory.status == 200) {
-                //    UserPreferenc.setStringPreference(Constants.MENU_CAT_IMG_PATH,""+menuCategory.res.image_base_path)
                 listsubcat = subCategory.res.subcategory as ArrayList<SubcategoryX>
                 root.recleview_subcat.adapter =
                     SubCategoryAdepter(
@@ -331,7 +342,7 @@ class MenuFragment : Fragment() {
                 var params = mapOf(
                     "bar_id" to "" + Constants.bar_id,
                     "cat_id" to "" + catid,
-                    "subcat_id" to "" + subcatid,
+                    "sub_cat_id" to "" + subcatid,
                     "sort" to "1"
                 )
 
@@ -350,6 +361,136 @@ class MenuFragment : Fragment() {
         }
     }
 
+
+    private fun setSubSubCategoryObservers(fullUrl: String, params: Map<String, String>) {
+        try {
+            viewModel.getSubSubCategory(fullUrl, params)
+                .observe(this.requireActivity(), androidx.lifecycle.Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            com.example.peazy.utility.Status.SUCCESS -> {
+
+                                resource.data?.let { response: Response<SubSubCategory> ->
+                                    response.body().let { subcat ->
+                                        subcat?.let { it1 ->
+                                            sendResponseOfSubSubcategory(
+                                                it1
+                                            )
+                                        }
+                                    }
+                                }
+                                Log.d(
+                                    TAG,
+                                    "Response" + resource.data?.let { response: Response<SubSubCategory> ->
+                                        response.body().toString()
+                                    })
+                            }
+                            com.example.peazy.utility.Status.ERROR -> {
+                                try {
+                                    progressDialog!!.dismiss()
+                                    Log.e(TAG, "" + resource.message)
+                                } catch (e: Exception) {
+                                    Log.e(TAG, e.message)
+                                }
+
+                            }
+                            com.example.peazy.utility.Status.LOADING -> {
+                                progressDialog = ProgressDialog(this.requireContext())
+                                progressDialog!!.setMessage("loading...")
+                                progressDialog!!.show()
+
+
+                            }
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
+
+    fun sendResponseOfSubSubcategory(subSubCategory: SubSubCategory) {
+        try {
+            progressDialog!!.dismiss()
+
+            if (subSubCategory.status == 200) {
+                listsubsubcat = subSubCategory.res.subcategory as ArrayList<Subcategory>
+
+                try {
+                    var i: Int = 0
+                    if (item1 != null) {
+                        val item = JSONObject(item1.toString())
+                        Log.d(
+                            TAG,
+                            "Response of item" + item.toString()
+                        )
+                        while (i < listsubsubcat.size) {
+
+                            val jsonarray_info: JSONArray? =
+                                item!!.getJSONArray(listsubsubcat.get(i).name.toString())
+                            var j: Int = 0
+                            var list1 = ArrayList<SubItem>()
+                            while (j < jsonarray_info!!.length()) {
+                                var json_objectdetail: JSONObject = jsonarray_info.getJSONObject(j)
+
+                                Log.d(
+                                    TAG,
+                                    "image of item" + json_objectdetail!!.getString("image")
+                                        .toString()
+                                )
+                                list1.add(
+                                    SubItem(
+                                        json_objectdetail.getString("description"),
+                                        json_objectdetail.getString("image"),
+                                        json_objectdetail.getString("item_id"),
+                                        json_objectdetail.getString("name"),
+                                        json_objectdetail.getInt("price"),
+                                        json_objectdetail.getString("sub_sub_cat_id"), 0
+                                    )
+                                )
+                                j++
+                            }
+                            listsubsubcat.get(i).subItem = list1 as ArrayList<SubItem>
+
+                            i++
+
+                        }
+
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                root.recleview_subsubcat.adapter =
+                    SubSubCategoryAdepter(requireContext(),
+                        listsubsubcat,
+                        { selsectItem: Subcategory -> subSubCat_listItemClick(selsectItem) })
+
+                subcatid = subSubCategory.res.subcategory.get(0).subcat_id
+
+                /* var params = mapOf(
+                     "bar_id" to "" + Constants.bar_id,
+                     "cat_id" to "" + catid,
+                     "subcat_id" to "" + subcatid,
+                     "sort" to "1"
+                 )
+
+                 setMenuItemObservers(params)*/
+            } else {
+                AppUtility.getInstance().alertDialogWithSingleButton(
+                    this.requireContext(),
+                    "Error",
+                    "Somthing Wrong"
+                )
+            }
+
+
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
+
+
     private fun setMenuItemObservers(params: Map<String, String>) {
         try {
             viewModel.getMenuItem(params)
@@ -358,7 +499,7 @@ class MenuFragment : Fragment() {
                         when (resource.status) {
                             com.example.peazy.utility.Status.SUCCESS -> {
 
-                                resource.data?.let { response: Response<BarMenuItem> ->
+                                resource.data?.let { response: Response<MenuItems> ->
                                     response.body().let { signUP ->
                                         signUP?.let { it1 ->
                                             sendResponseOfMenuItem(
@@ -369,7 +510,7 @@ class MenuFragment : Fragment() {
                                 }
                                 Log.d(
                                     TAG,
-                                    "Response" + resource.data?.let { response: Response<BarMenuItem> ->
+                                    "Response" + resource.data?.let { response: Response<MenuItems> ->
                                         response.body().toString()
                                     })
                             }
@@ -398,7 +539,8 @@ class MenuFragment : Fragment() {
         }
     }
 
-    fun sendResponseOfMenuItem(barMenuItem: BarMenuItem) {
+
+    fun sendResponseOfMenuItem(barMenuItem: MenuItems) {
         try {
             progressDialog!!.dismiss()
 
@@ -407,11 +549,13 @@ class MenuFragment : Fragment() {
                     Constants.MENU_ITEM_PATH,
                     "" + barMenuItem.res.image_base_path
                 )
-                bar_menu_item = barMenuItem.res.item as ArrayList<Item>
-                root.recleview_menuitem.adapter =
-                    MenuItemAdepter(
-                        bar_menu_item,
-                        { selsectItem: Item -> barMenulistItemClick(selsectItem) })
+
+                item1 = barMenuItem.res.item.toString()
+
+                var fullUrl = "api/v2/subsubcategory/" + catid + "/" + subcatid + "/list"
+                var params = mapOf("sort" to "1")
+                Log.e(TAG, "Full URL=" + fullUrl)
+                setSubSubCategoryObservers(fullUrl, params)
 
             } else {
 
@@ -434,7 +578,6 @@ class MenuFragment : Fragment() {
         root.item_total.text = "" + itemCount + " Item"
         root.total_price.text = Constants.currency + price_total
         sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
-
     }
 
 }

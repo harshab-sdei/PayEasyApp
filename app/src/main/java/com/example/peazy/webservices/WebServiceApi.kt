@@ -6,11 +6,13 @@ import com.example.peazy.models.category.MenuCategory
 import com.example.peazy.models.editprofile.EditProfile
 import com.example.peazy.models.logout.Logout
 import com.example.peazy.models.menu_item.BarMenuItem
+import com.example.peazy.models.menuitems.MenuItems
 import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.models.payorder.PayOrder
 import com.example.peazy.models.reserve_table.ReserveTable
 import com.example.peazy.models.signup.SignUP
 import com.example.peazy.models.subcategory.SubCategory
+import com.example.peazy.models.subsubcategory.SubSubCategory
 import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.models.viewcard.ViewCard
 import retrofit2.Response
@@ -80,7 +82,13 @@ interface WebServiceApi {
         @QueryMap params: Map<String, String>
     ): Response<SubCategory>
 
+    @GET("{fullUrl}")
+    suspend fun getSubSubCategory(
+        @Path(value = "fullUrl", encoded = true) fullUrl: String,
+        @QueryMap params: Map<String, String>
+    ): Response<SubSubCategory>
+
     @GET(" /api/v2/item/list")
-    suspend fun getMenuItem(@QueryMap params: Map<String, String>): Response<BarMenuItem>
+    suspend fun getMenuItem(@QueryMap params: Map<String, String>): Response<MenuItems>
 
 }

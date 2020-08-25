@@ -13,20 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
-import com.example.peazy.controllers.ui.addcart.AddCart
 import com.example.peazy.databinding.PaymentMethodFragmentBinding
 import com.example.peazy.models.addpaycard.AddPayCard
-import com.example.peazy.models.nearby.Bar
-import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.models.viewcard.ViewCard
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
-import com.example.peazy.utility.appconfig.UserPreferenc
 import retrofit2.Response
-import java.util.ArrayList
 
 class PaymentMethodFragment : Fragment() {
     companion object {

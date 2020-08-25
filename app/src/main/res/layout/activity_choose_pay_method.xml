@@ -71,7 +71,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/samsungpay"
                 android:layout_width="match_parent"
                 android:backgroundTint="@color/light_blue1"

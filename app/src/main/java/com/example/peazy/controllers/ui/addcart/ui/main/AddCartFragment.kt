@@ -1,13 +1,18 @@
 package com.example.peazy.controllers.ui.addcart.ui.main
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -17,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peazy.R
 import com.example.peazy.controllers.ui.addcart.AddCartAdepter
+import com.example.peazy.controllers.ui.bardetail.BarDetailFragment
 import com.example.peazy.databinding.MainFragment3Binding
 import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.payorder.PayOrder
@@ -24,6 +30,8 @@ import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.book_table_dialog.view.*
+import kotlinx.android.synthetic.main.main_fragment.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Response
@@ -136,7 +144,9 @@ class AddCartFragment : Fragment() {
 
             }
 
-
+            binding.txtaddinstraction.setOnClickListener {
+                showDialog()
+            }
 
             binding.btPlaceOrder1.setOnClickListener {
                 oderConfirm()
@@ -357,5 +367,16 @@ class AddCartFragment : Fragment() {
         }
     }
 
+    fun showDialog() {
+        val mDialogView =
+            LayoutInflater.from(this.requireContext())
+                .inflate(R.layout.add_instructions_dialog, null)
+        val mBuilder = AlertDialog.Builder(this.requireContext())
+            .setView(mDialogView)
+
+        val mAlertDialog = mBuilder.show()
+
+
+    }
 
 }

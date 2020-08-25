@@ -75,7 +75,7 @@ class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(item: Add_Item, clickLister: (Add_Item) -> Unit) {
         var index =
-            UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + item.image.get(0)
+            UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + item.image
 
         try {
             if (index !== null) {

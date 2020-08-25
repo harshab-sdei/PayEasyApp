@@ -9,11 +9,16 @@ import com.bumptech.glide.Glide
 import com.example.peazy.R
 import com.example.peazy.controllers.ui.menu.MenuFragment
 import com.example.peazy.models.menu_item.Item
+import com.example.peazy.models.subsubcategory.SubItem
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.appconfig.UserPreferenc
+import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.bar_menu_item.view.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.*
 
-class MenuItemAdepter(var item: List<Item>, val clickLister: (Item) -> Unit) :
+class MenuItemAdepter(var item: List<SubItem>, val clickLister: (SubItem) -> Unit) :
     RecyclerView.Adapter<MyViewHolder>() {
     var row_index: Int = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -51,9 +56,11 @@ class MenuItemAdepter(var item: List<Item>, val clickLister: (Item) -> Unit) :
 
 class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: Item, clickLister: (Item) -> Unit) {
+    fun bind(item: SubItem, clickLister: (SubItem) -> Unit) {
+
+        var img: JSONArray = JSONArray(item.image)
         var index =
-            UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + item.image.get(0)
+            UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + img.optString(0)
 
         try {
             if (index !== null) {
