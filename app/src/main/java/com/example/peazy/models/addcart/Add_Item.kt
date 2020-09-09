@@ -5,6 +5,6 @@ data class Add_Item(
     val image: String,
     val item_id: String,
     val name: String,
-    val price: Int,
+    val price: Double,
     var num_of_unit: Int
 )

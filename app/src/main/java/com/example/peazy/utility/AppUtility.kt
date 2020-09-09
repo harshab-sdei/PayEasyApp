@@ -158,16 +158,30 @@ class AppUtility {
                     dialog, id -> dialog.dismiss()
             })*/
             // negative button text and action
-            .setNegativeButton("Ok", DialogInterface.OnClickListener {
-                    dialog, id -> dialog.cancel()
+            .setNegativeButton("Ok", DialogInterface.OnClickListener { dialog, id ->
+                dialog.cancel()
             })
 
         // create dialog box
         val alert = dialogBuilder.create()
-        // set title for alert dialog box
-        alert.setTitle(title)
-        // show alert dialog
         alert.show()
+
+    }
+
+    fun getFirstandLast(txtusernm: String): String {
+        try {
+            var str = txtusernm.split(" ")
+            if (str.size > 0) {
+                if (str.size == 1) {
+                    return str.get(0).substring(0, 1).toUpperCase()
+                } else {
+                    return (str.get(0).substring(0, 1) + str.get(1).substring(0, 1)).toUpperCase()
+                }
+            }
+        } catch (e: Exception) {
+        }
+        return txtusernm.substring(0, 1).toUpperCase()
+
 
     }
 

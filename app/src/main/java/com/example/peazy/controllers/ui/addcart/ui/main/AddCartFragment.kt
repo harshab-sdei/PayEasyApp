@@ -1,12 +1,8 @@
 package com.example.peazy.controllers.ui.addcart.ui.main
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.app.ProgressDialog
-import android.app.TimePickerDialog
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,22 +16,23 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ebanx.swipebtn.OnActiveListener
 import com.example.peazy.R
 import com.example.peazy.controllers.ui.addcart.AddCartAdepter
-import com.example.peazy.controllers.ui.bardetail.BarDetailFragment
 import com.example.peazy.databinding.MainFragment3Binding
 import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.payorder.PayOrder
 import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
+import com.example.peazy.utility.appconfig.UserPreferenc
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.book_table_dialog.view.*
-import kotlinx.android.synthetic.main.main_fragment.view.*
+import kotlinx.android.synthetic.main.add_instructions_dialog.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Response
-import java.util.*
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 class AddCartFragment : Fragment() {
@@ -52,6 +49,9 @@ class AddCartFragment : Fragment() {
     lateinit var binding: MainFragment3Binding
     lateinit var progressDialog: ProgressDialog
     var addcartlist = ArrayList<Add_Item>()
+    var instruction: String? = null
+    var tip: Int? = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,8 +74,6 @@ class AddCartFragment : Fragment() {
             binding.recleviewAdditem.layoutManager =
                 LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
 
-            viewModel.sub_total.observe(this, Observer {
-            })
 
             binding.tableNo.text = "" + Constants.tableNo
             binding.recleviewAdditem.adapter =
@@ -154,9 +152,51 @@ class AddCartFragment : Fragment() {
             binding.btPlaceOrder.setOnClickListener {
                 oderConfirm()
             }
+
+
+            binding.swipeNoState.setOnActiveListener(object : OnActiveListener {
+                override fun onActive() {
+                    binding.swipeNoState.setHasActivationState(false)
+                    oderConfirm()
+                }
+            })
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+
+        viewModel._total.observe(this, Observer {
+            binding.totalPrice.text = "" + String.format("%.2f", it)
+            binding.totalPrice1.text = "" + String.format("%.2f", it)
+            binding.btTotal.text = String.format("%.2f", it)
+        })
+        //for tip
+        binding.layRoundup.setOnClickListener {
+            try {
+                binding.layRoundup.setBackgroundResource(R.drawable.button_dark_orange)
+                val df = DecimalFormat("#")
+                df.roundingMode = RoundingMode.UP
+                tip = df.format(binding.roundedamount.text.toString().toDouble()).toInt()
+                viewModel._total.value = (tip!! + sub_total.toInt()).toDouble()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        binding.layCf2.setOnClickListener {
+            tip = binding.cf2.text.toString().toInt()
+            binding.layCf2.setBackgroundResource(R.drawable.button_dark_orange)
+            binding.layRoundup.setBackgroundResource(R.drawable.button_dark_gray)
+            binding.layCf5.setBackgroundResource(R.drawable.button_dark_gray)
+
+            viewModel._total.value = sub_total + tip!!.toDouble()
+        }
+        binding.layCf5.setOnClickListener {
+            tip = binding.cf5.text.toString().toInt()
+            binding.layCf5.setBackgroundResource(R.drawable.button_dark_orange)
+            binding.layRoundup.setBackgroundResource(R.drawable.button_dark_gray)
+            binding.layCf2.setBackgroundResource(R.drawable.button_dark_gray)
+            viewModel._total.value = sub_total + tip!!.toDouble()
+        }
+
         binding.lifecycleOwner = this
         binding.myorder = viewModel
 
@@ -171,16 +211,24 @@ class AddCartFragment : Fragment() {
             jsonOb.put("price", item.price.toInt())
             jsonArray.put(jsonOb)
         }
-        Log.d(TAG, "Item list" + jsonArray.toString())
         var amount: Int = viewModel._total.value!!.toInt()
-        val params = mapOf(
+        val params: Map<String, Any?> = mapOf(
             "bar_id" to "" + Constants.bar_id,
+            "mode" to "" + UserPreferenc.getStringPreference(Constants.PAYMENT_MODE, "2"),
             "amount" to "" + amount,
+            "tips" to tip!!.toInt(),
+            "instruction" to "" + instruction,
+            "vat" to Constants.vat.toInt(),
+            "p_fee" to Constants.servicefree.toInt(),
             "item" to "" + jsonArray.toString()
         )
-        Log.d(TAG, "request json" + params)
-        setObservers(params)
+        Log.d(TAG, "cartdata" + params.toString())
 
+        if (!instruction.isNullOrBlank()) {
+            setObservers(params)
+        } else {
+            showDialog()
+        }
     }
 
     fun listItemClick(addItem: Add_Item) {
@@ -195,25 +243,34 @@ class AddCartFragment : Fragment() {
         }
 
         sub_total = viewModel.sub_total.value!!
-        binding.subtotal.text = Constants.currency + viewModel.sub_total.value
+        binding.subtotal.text = Constants.currency + sub_total
         binding.txtvat.text = "" + Constants.vat + "%"
-        /*if service charge calculate then remove bellow line*/
+        binding.txtservicefee.text = Constants.currency + Constants.servicefree
         viewModel._total.value = sub_total
-        binding.totalPrice.text = "" + viewModel._total.value
-        binding.totalPrice1.text = "" + viewModel._total.value
+        binding.totalPrice.text = "" + String.format("%.2f", viewModel._total.value)
+        binding.totalPrice1.text = "" + String.format("%.2f", viewModel._total.value)
+        binding.roundedamount.text =
+            String.format("%.2f", roundOffDecimal(viewModel.sub_total.value!!))
+
+    }
+
+    fun roundOffDecimal(number: Double): Double? {
+        val fractional_part = number % 1
+        return fractional_part
     }
 
     fun serviceChargeCal() {
         var servicecharge: Double = ((sub_total * Constants.servicefree) / 100)
         if (servicecharge >= 2) {
-            viewModel._total.value = sub_total + 2
+            viewModel._total.value = (sub_total + 2).toDouble()
         } else {
             viewModel._total.value = sub_total + servicecharge
 
         }
     }
 
-    private fun setObservers(params: Map<String, String>) {
+
+    private fun setObservers(params: Map<String, Any?>) {
         try {
             viewModel.payOrder(params)
                 .observe(this.requireActivity(), androidx.lifecycle.Observer {
@@ -236,7 +293,7 @@ class AddCartFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -245,7 +302,6 @@ class AddCartFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
-
                                 progressDialog!!.setMessage("loading...")
                                 progressDialog!!.show()
 
@@ -259,6 +315,7 @@ class AddCartFragment : Fragment() {
         }
     }
 
+
     fun sendResponse(payOrder: PayOrder) {
         try {
             progressDialog!!.dismiss()
@@ -271,6 +328,8 @@ class AddCartFragment : Fragment() {
                     R.id.action_addCartFragment_to_paymentMethodFragment,
                     bundle
                 )
+
+
                 /* if(!payOrder.res.stripe_token.isEmpty())
                  setconfirmpayObservers(payOrder.res.stripe_token.toString())*/
 
@@ -367,6 +426,7 @@ class AddCartFragment : Fragment() {
         }
     }
 
+
     fun showDialog() {
         val mDialogView =
             LayoutInflater.from(this.requireContext())
@@ -375,7 +435,9 @@ class AddCartFragment : Fragment() {
             .setView(mDialogView)
 
         val mAlertDialog = mBuilder.show()
-
+        mDialogView.bt_instruction.setOnClickListener {
+            instruction = mDialogView.ed_instruction.text.toString()
+        }
 
     }
 

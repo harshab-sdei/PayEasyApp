@@ -8,15 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.peazy.R
 import com.example.peazy.controllers.ui.menu.MenuFragment
-import com.example.peazy.models.menu_item.Item
 import com.example.peazy.models.subsubcategory.SubItem
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.appconfig.UserPreferenc
-import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.bar_menu_item.view.*
 import org.json.JSONArray
-import org.json.JSONObject
-import java.util.*
 
 class MenuItemAdepter(var item: List<SubItem>, val clickLister: (SubItem) -> Unit) :
     RecyclerView.Adapter<MyViewHolder>() {
@@ -58,19 +54,21 @@ class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(item: SubItem, clickLister: (SubItem) -> Unit) {
 
-        var img: JSONArray = JSONArray(item.image)
-        var index =
-            UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + img.optString(0)
 
-        try {
-            if (index !== null) {
-                Glide.with(this.view.context)
-                    .load(index)
-                    .error(R.drawable.logo)
-                    .into(view.item_img)
+        if (!item.image.isNullOrEmpty()) {
+            var index =
+                UserPreferenc.getStringPreference(Constants.MENU_ITEM_PATH, "") + item.image.get(0)
+
+            try {
+                if (index !== null) {
+                    Glide.with(this.view.context)
+                        .load(index)
+                        .error(R.drawable.logo)
+                        .into(view.item_img)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
         view.itemname.text = item.name
         view.ite_desc.text = item.description

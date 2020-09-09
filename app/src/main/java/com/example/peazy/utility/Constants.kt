@@ -22,6 +22,7 @@ class Constants {
         var stripToken: String? = ""
 
         val IS_USER_Login: String = "is_user_login"
+        val IS_USER_Choose_Mode: String = "is_user_choose_mode"
 
         /*API Parameters Name */
         var NAME: String = "name"
@@ -29,7 +30,10 @@ class Constants {
         var PASSWORD: String = "password"
         var LANGUAGE_SEL: String = "language_selected"
         var DEVICE_TOKEN: String = "device_token"
+        var PAYMENT_MODE: String = "payment_mode"
         var ACCESS_TOKEN: String = "access_token"
+        var USER_NAME: String = "user_name"
+        var USER_EMAIL: String = "user_email"
         var PLATFORM: String = "platform"
 
 

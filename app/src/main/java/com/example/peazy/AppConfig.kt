@@ -1,5 +1,6 @@
 package com.example.peazy
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
@@ -29,18 +30,19 @@ class AppConfig :Application(){
         }
 
 
+        @SuppressLint("CommitPrefEdits")
         fun getApplicationPreferenceEditor(): SharedPreferences.Editor? {
             if (sharedPreferencesEditor == null) {
                 sharedPreferences =
                     getContext()!!.getSharedPreferences("peazy.txt", Context.MODE_PRIVATE)
-                sharedPreferencesEditor = sharedPreferences?.edit()
+                sharedPreferencesEditor = sharedPreferences.edit()
             }
             return sharedPreferencesEditor
         }
 
         fun getApplicationPreference(): SharedPreferences? {
-            if (sharedPreferences == null) sharedPreferences =
-                getContext()!!.getSharedPreferences("peazy.txt",Context.MODE_PRIVATE)
+            sharedPreferences =
+                getContext()!!.getSharedPreferences("peazy.txt", Context.MODE_PRIVATE)
             return sharedPreferences
         }
 

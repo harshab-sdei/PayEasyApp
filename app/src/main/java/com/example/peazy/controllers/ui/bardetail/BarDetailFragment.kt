@@ -101,28 +101,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
             }
             sheetBehavior = BottomSheetBehavior.from(root.bottom_sheet)
-            sheetBehavior!!.setBottomSheetCallback(object :
-                BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    when (newState) {
-                        BottomSheetBehavior.STATE_HIDDEN -> {
-                        }
-                        BottomSheetBehavior.STATE_EXPANDED -> {
-                        }
-                        BottomSheetBehavior.STATE_COLLAPSED -> {
-                        }
-                        BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_SETTLING -> sheetBehavior!!.setHideable(
-                            false
-                        )
-                    }
-                }
 
-                override fun onSlide(
-                    bottomSheet: View,
-                    slideOffset: Float
-                ) {
-                }
-            })
             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
 
             fragments = getFragments()
@@ -140,7 +119,6 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
         for (i in bar_detail.get(0).image) {
             fList.add(GalleryFragment.newInstance(i))
         }
-
         return fList
     }
 
@@ -233,6 +211,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
                     println(params)
                     if (mDialogView.ed_num_person.text.toString().toInt() > 0) {
                         setupObservers(params)
+
                     } else {
                         setError("Person have to be grater than 0")
                     }
@@ -330,7 +309,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
                             }
                             Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    //   progressDialog!!.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -338,9 +317,9 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
                             }
                             Status.LOADING -> {
-                                progressDialog = ProgressDialog(this.requireContext())
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                /*  progressDialog = ProgressDialog(this.requireContext())
+                                  progressDialog!!.setMessage("loading...")
+                                  progressDialog!!.show()*/
                             }
                         }
                     }
@@ -352,12 +331,8 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
     fun sendResponse(bookTable: BookTable) {
         try {
-            progressDialog!!.dismiss()
-            /* val bundle = Bundle()
-             bundle.putString("tiltle", "" + root.bartitle.text.toString())
-             bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
-             findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
-             sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED*/
+            //  progressDialog!!.dismiss()
+
             if (bookTable.status == 200) {
 
                 val bundle = Bundle()
@@ -378,6 +353,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
                         "Error",
                         "" + errors.msg
                     )
+
 
             }
 

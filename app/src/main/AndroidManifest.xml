@@ -25,7 +25,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".controllers.choosepayment.ChoosePayMethod"></activity>
+        <activity android:name=".controllers.addcard.AddCardActivity"></activity>
+        <activity android:name=".controllers.choosepayment.ChoosePayMethod" />
         <activity android:name=".controllers.ui.addcart.AddCart" />
         <activity android:name=".controllers.ui.menu.Menu" />
         <activity android:name=".controllers.ui.bardetail.BarDetail" />
@@ -51,11 +52,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/logo" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/orange" />

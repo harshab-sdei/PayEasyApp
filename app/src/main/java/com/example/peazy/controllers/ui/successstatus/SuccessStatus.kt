@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
+import com.example.peazy.utility.Constants
+import com.example.peazy.utility.appconfig.UserPreferenc
 import kotlinx.android.synthetic.main.fragment_success_status.view.*
 
 
@@ -31,10 +33,9 @@ class SuccessStatus : Fragment() {
 
 
         try {
-            var str: String? = requireArguments().getString("tableNo").toString()
             bar_id = requireArguments().getString("bar_id").toString()
 
-            root!!.tablenum.text = str
+            root!!.tablebookname.text = UserPreferenc.getStringPreference(Constants.USER_NAME, "")
 
         } catch (e: Exception) {
         }
@@ -47,11 +48,13 @@ class SuccessStatus : Fragment() {
                 .build()
             var bundle = Bundle()
             bundle.putString("bar_id", "" + bar_id)
-            findNavController().navigate(
+            /*findNavController().navigate(
                 R.id.action_successStatus_to_menuFragment,
                 bundle,
                 navOptions
-            )
+            )*/
+            findNavController().navigate(R.id.action_successStatus_to_tableBookMapFragment)
+
         }
 
     }

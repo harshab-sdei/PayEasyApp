@@ -20,7 +20,7 @@ import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.category.Category
 import com.example.peazy.models.category.MenuCategory
 import com.example.peazy.models.menu_item.Item
-import com.example.peazy.models.menuitems.MenuItems
+import com.example.peazy.models.menu_item.MenuItems
 import com.example.peazy.models.subcategory.SubCategory
 import com.example.peazy.models.subcategory.SubcategoryX
 import com.example.peazy.models.subsubcategory.SubItem
@@ -49,7 +49,7 @@ class MenuFragment : Fragment() {
 
     }
 
-    var item1: String? = null
+    var item1 = ArrayList<Item>()
     var listcat = ArrayList<Category>()
     var listsubcat = ArrayList<SubcategoryX>()
     var listsubsubcat = ArrayList<Subcategory>()
@@ -81,7 +81,7 @@ class MenuFragment : Fragment() {
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
 
 
-        viewModel.itemCount.observe(this, Observer {
+        viewModel.itemCount.observe(this.requireActivity(), Observer {
             updateOder()
         })
 
@@ -155,7 +155,7 @@ class MenuFragment : Fragment() {
     }
 
     fun barMenulistItemClick(item: Item) {
-        var isinsert = false
+        /*var isinsert = false
 
         for (additem in Constants.addcartlist) {
 
@@ -177,7 +177,7 @@ class MenuFragment : Fragment() {
                 item.num_of_unit
             )
             Constants.addcartlist.add(addItem)
-        }
+        }*/
 
 
         print("add Item size" + Constants.addcartlist.size)
@@ -418,41 +418,32 @@ class MenuFragment : Fragment() {
 
                 try {
                     var i: Int = 0
-                    if (item1 != null) {
-                        val item = JSONObject(item1.toString())
-                        Log.d(
-                            TAG,
-                            "Response of item" + item.toString()
-                        )
+                    if (item1.size > 0) {
                         while (i < listsubsubcat.size) {
 
-                            val jsonarray_info: JSONArray? =
-                                item!!.getJSONArray(listsubsubcat.get(i).name.toString())
-                            var j: Int = 0
                             var list1 = ArrayList<SubItem>()
-                            while (j < jsonarray_info!!.length()) {
-                                var json_objectdetail: JSONObject = jsonarray_info.getJSONObject(j)
-
-                                Log.d(
-                                    TAG,
-                                    "image of item" + json_objectdetail!!.getString("image")
-                                        .toString()
-                                )
-                                list1.add(
-                                    SubItem(
-                                        json_objectdetail.getString("description"),
-                                        json_objectdetail.getString("image"),
-                                        json_objectdetail.getString("item_id"),
-                                        json_objectdetail.getString("name"),
-                                        json_objectdetail.getInt("price"),
-                                        json_objectdetail.getString("sub_sub_cat_id"), 0
+                            var j = 0
+                            while (j < item1.size) {
+                                if (item1.get(j).sub_sub_cat.equals(listsubsubcat.get(i).name)) {
+                                    list1.add(
+                                        SubItem(
+                                            item1.get(j).description,
+                                            item1.get(j).image,
+                                            item1.get(j).item_id,
+                                            item1.get(j).name,
+                                            item1.get(j).price,
+                                            item1.get(j).sub_sub_cat,
+                                            item1.get(j).sub_sub_cat_id,
+                                            0
+                                        )
                                     )
-                                )
+                                }
                                 j++
                             }
                             listsubsubcat.get(i).subItem = list1 as ArrayList<SubItem>
 
                             i++
+
 
                         }
 
@@ -550,7 +541,7 @@ class MenuFragment : Fragment() {
                     "" + barMenuItem.res.image_base_path
                 )
 
-                item1 = barMenuItem.res.item.toString()
+                item1 = barMenuItem.res.item as ArrayList<Item>
 
                 var fullUrl = "api/v2/subsubcategory/" + catid + "/" + subcatid + "/list"
                 var params = mapOf("sort" to "1")
@@ -576,7 +567,7 @@ class MenuFragment : Fragment() {
 
     fun updateOder() {
         root.item_total.text = "" + itemCount + " Item"
-        root.total_price.text = Constants.currency + price_total
+        root.total_price.text = Constants.currency + String.format("%.2f", price_total)
         sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
     }
 

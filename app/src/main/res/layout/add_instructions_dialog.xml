@@ -37,6 +37,7 @@
             android:text="@string/instruction" />
 
         <EditText
+
             android:layout_marginTop="@dimen/_5sdp"
             style="@style/AppTheme.inputLayout"
             android:id="@+id/ed_instruction"

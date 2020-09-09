@@ -9,13 +9,13 @@
         android:background="@color/White"
         tools:context=".controllers.paymentmethod.PaymentMethodFragment">
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             style="@style/AppTheme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="vertical"
             android:background="@color/White"
-            android:fillViewport="true"
-            tools:context=".controllers.paymentmethod.PaymentMethod">
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_marginTop="20dp"
@@ -51,18 +51,17 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_weight="0.25"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/_5sdp"
                             android:layout_gravity="center"
                             android:gravity="center">
 
@@ -133,13 +132,106 @@
                                     android:inputType="number"
                                     android:padding="3dp" />
                             </LinearLayout>
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/samsungpay"
+                            android:layout_width="match_parent"
+                            android:backgroundTint="@color/light_blue1"
+                            android:layout_height="@dimen/button_height"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="@dimen/_15sdp"
+                            android:layout_marginRight="20dp"
+                            android:background="@drawable/button_outlin_orange"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/padding_10">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_samsung_pay" />
+
+                            <TextView
+                                style="@style/AppTheme.cardbttitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="@dimen/margin_15"
+                                android:cursorVisible="false"
+                                android:gravity="center"
+                                android:textColor="@color/White"
+                                android:text="@string/SamsungPay" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="right"
+                                android:gravity="right|center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="@dimen/margin_15"
+                                    android:src="@drawable/ic_back_right_24"
+                                    android:tint="@color/White" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:id="@+id/bt_bycash"
+                            android:layout_width="match_parent"
+                            android:backgroundTint="@color/orange"
+                            android:layout_height="@dimen/button_height"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="@dimen/_15sdp"
+                            android:layout_marginBottom="@dimen/_15sdp"
+                            android:layout_marginRight="20dp"
+                            android:background="@drawable/button_outlin_orange"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/padding_10">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:padding="@dimen/_5sdp"
+                                android:src="@drawable/ic_cash" />
+
+                            <TextView
+                                style="@style/AppTheme.cardbttitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="@dimen/margin_15"
+                                android:cursorVisible="false"
+                                android:gravity="center"
+                                android:textColor="@color/White"
+                                android:text="@string/bycash" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="right"
+                                android:gravity="right|center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="@dimen/margin_15"
+                                    android:src="@drawable/ic_back_right_24"
+                                    android:tint="@color/White" />
+                            </LinearLayout>
+                        </LinearLayout>
+
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
 
                         <TextView
@@ -153,7 +245,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="10dp"
                             android:layout_marginRight="10dp"
                             android:layout_marginBottom="10dp"
                             android:text="@string/pay_addnewcard"
@@ -169,12 +261,12 @@
                             android:layout_marginRight="20dp"
                             android:hint="@string/CardNumber">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.stripe.android.view.CardNumberEditText
                                 android:id="@+id/editcardnum"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:inputType="number|textNoSuggestions"
+                                android:inputType="number"
                                 app:errorEnabled="true" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -188,7 +280,7 @@
                             android:layout_marginRight="20dp"
                             android:hint="@string/Cardholdername">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.stripe.android.view.StripeEditText
                                 android:id="@+id/editcardholder"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -219,11 +311,11 @@
                                     android:layout_marginRight="20dp"
                                     android:hint="@string/exdate">
 
-                                    <com.google.android.material.textfield.TextInputEditText
+                                    <com.stripe.android.view.ExpiryDateEditText
                                         android:id="@+id/editexdate"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="number"
+                                        android:inputType="date"
                                         app:errorEnabled="true" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -245,33 +337,31 @@
                                     android:layout_marginRight="20dp"
                                     android:hint="@string/CardCVV">
 
-                                    <com.google.android.material.textfield.TextInputEditText
+                                    <com.stripe.android.view.CvcEditText
                                         android:id="@+id/editcvv"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="numberSigned"
                                         app:errorEnabled="true" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
                             </LinearLayout>
                         </LinearLayout>
-
                         <Button
-                            android:visibility="gone"
                             android:id="@+id/bt_save_card"
                             style="@style/button_textstlyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-
                             android:layout_marginTop="25dp"
                             android:background="@drawable/button_dark_gray"
                             android:gravity="center"
+                            android:layout_marginBottom="@dimen/_15sdp"
                             android:text="@string/bt_saveCard" />
 
                         <LinearLayout
                             android:id="@+id/bt_pay_now"
+                            android:visibility="gone"
                             android:layout_marginTop="25dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -341,7 +431,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </FrameLayout>
 </layout>

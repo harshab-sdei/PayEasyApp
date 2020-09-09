@@ -1,6 +1,7 @@
 package com.example.peazy.controllers.paymentmethod
 
 import android.app.ProgressDialog
+import android.os.Build
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.Editable
@@ -13,14 +14,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
 import com.example.peazy.databinding.PaymentMethodFragmentBinding
+import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.addpaycard.AddPayCard
+import com.example.peazy.models.nearby.Bar
+import com.example.peazy.models.payorder.PayOrder
 import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.models.viewcard.ViewCard
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
+import com.google.gson.JsonObject
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Response
+import java.util.ArrayList
 
 class PaymentMethodFragment : Fragment() {
     companion object {
@@ -34,7 +43,9 @@ class PaymentMethodFragment : Fragment() {
     private lateinit var viewModel: PaymentMethodViewModel
     lateinit var databinding: PaymentMethodFragmentBinding
     lateinit var progressDialog: ProgressDialog
-
+    lateinit var addcartlist: Map<String, Any>
+    var amount: Int? = 0
+    var paymentmode: Int? = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,13 +54,23 @@ class PaymentMethodFragment : Fragment() {
             DataBindingUtil.inflate(inflater, R.layout.payment_method_fragment, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
 
-
+        /* addcartlist =
+             (requireArguments().getSerializable("cartdata") as Map<String,Any>)*/
         return databinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(PaymentMethodViewModel::class.java)
+
+        if (Build.MANUFACTURER.toString().equals("Samsung")) {
+            databinding.samsungpay.visibility = View.VISIBLE
+        }
+
+        databinding.btBycash.setOnClickListener {
+            paymentmode = 2
+            oderConfirm()
+        }
         databinding.editcardnum.addTextChangedListener(object : TextWatcher {
             private var current = ""
             override fun afterTextChanged(s: Editable) {
@@ -509,4 +530,88 @@ class PaymentMethodFragment : Fragment() {
             Log.e(TAG, e.message)
         }
     }
+
+    fun oderConfirm() {
+
+        val params = mapOf(
+            "bar_id" to "" + Constants.bar_id,
+            "amount" to "" + amount,
+            "mode" to "" + paymentmode
+        )
+        Log.d(TAG, "request json" + params)
+        setObservers(params)
+
+    }
+
+    private fun setObservers(params: Map<String, String>) {
+        try {
+            viewModel.payOrder(params)
+                .observe(this.requireActivity(), androidx.lifecycle.Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            com.example.peazy.utility.Status.SUCCESS -> {
+
+                                resource.data?.let { response: Response<PayOrder> ->
+                                    response.body().let { signUP ->
+                                        signUP?.let { it1 ->
+                                            sendResponse(it1)
+                                        }
+                                    }
+                                }
+                                Log.d(
+                                    TAG,
+                                    "Response" + resource.data?.let { response: Response<PayOrder> ->
+                                        response.body().toString()
+                                    })
+                            }
+                            com.example.peazy.utility.Status.ERROR -> {
+                                try {
+                                    progressDialog!!.dismiss()
+                                    Log.e(TAG, "" + resource.message)
+                                } catch (e: Exception) {
+                                    Log.e(TAG, e.message)
+                                }
+
+                            }
+                            com.example.peazy.utility.Status.LOADING -> {
+                                progressDialog = ProgressDialog(this.requireContext())
+
+                                progressDialog!!.setMessage("loading...")
+                                progressDialog!!.show()
+
+
+                            }
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
+
+    fun sendResponse(payOrder: PayOrder) {
+        try {
+            progressDialog!!.dismiss()
+
+            if (payOrder.status == 200) {
+                var bundle = Bundle()
+                Constants.stripToken = payOrder.res.stripe_token.toString()
+
+            } else {
+                val errors = payOrder.err
+
+                AppUtility.getInstance()
+                    .alertDialogWithSingleButton(
+                        this.requireContext(),
+                        "Error",
+                        "" + errors.msg
+                    )
+            }
+
+
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+        }
+    }
+
 }

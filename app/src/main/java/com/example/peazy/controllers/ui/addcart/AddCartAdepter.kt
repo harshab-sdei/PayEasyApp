@@ -89,7 +89,8 @@ class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         }
         view.txt_item_name.text = item.name
         view.txtitem.text = "" + item.num_of_unit
-        view.txtprice.text = Constants.currency + (item.price * item.num_of_unit)
+        view.txtprice.text =
+            Constants.currency + String.format("%.2f", (item.price * item.num_of_unit))
 
     }
 

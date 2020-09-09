@@ -2,14 +2,20 @@ package com.example.peazy.controllers.ui.barstatus
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import androidx.lifecycle.ViewModelProviders
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.peazy.R
@@ -17,8 +23,13 @@ import com.example.peazy.models.reserve_table.ReserveTable
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.Status
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.bar_status_fragment.*
 import kotlinx.android.synthetic.main.bar_status_fragment.view.*
+import kotlinx.android.synthetic.main.book_table_dialog.view.*
 import retrofit2.Response
+import java.util.*
+
 
 class BarStatus : Fragment() {
 
@@ -30,6 +41,7 @@ class BarStatus : Fragment() {
     private lateinit var viewModel: BarStatusViewModel
     var TAG = "BarStatus"
     lateinit var progressDialog: ProgressDialog
+    var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
 
     @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
@@ -37,6 +49,8 @@ class BarStatus : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         root = inflater.inflate(R.layout.bar_status_fragment, container, false)
+        sheetBehavior = BottomSheetBehavior.from(root!!.bottom_sheet)
+
         return root
     }
 
@@ -54,7 +68,59 @@ class BarStatus : Fragment() {
             )
             setupObservers(params)
         }
+
+        toggle.setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener { group, checkedId -> // checkedId is the RadioButton selected
+
+            when (checkedId) {
+                R.id.pickup -> {
+                    sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
+
+                }
+                R.id.tableservice -> {
+                    sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+        })
+
+        bt_select_time.setOnClickListener {
+            val myCalendar: Calendar = Calendar.getInstance()
+            val timeSetListener =
+                TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                    /*  var hour = hourOfDay
+                      var minutes = minute
+                      var timeSet = ""
+                      if (hour > 12) {
+                          hour -= 12
+                          timeSet = "PM"
+                      } else if (hour === 0) {
+                          hour += 12
+                          timeSet = "AM"
+                      } else if (hour === 12) {
+                          timeSet = "PM"
+                      } else {
+                          timeSet = "AM"
+                      }
+
+                      var min: String? = ""
+                      if (minutes < 10) min = "0$minutes" else min = java.lang.String.valueOf(minutes)
+
+                      val aTime: String = StringBuilder().append(hour).append(':')
+                          .append(min).append(" ").append(timeSet).toString()*/
+                    var aTime: String = "" + hourOfDay + ":" + minute
+                    bt_select_time.setText("Selected Time is " + aTime)
+                }
+
+            TimePickerDialog(
+                getActivity(),
+                timeSetListener,
+                myCalendar.get(Calendar.HOUR_OF_DAY),
+                myCalendar.get(Calendar.MINUTE),
+                DateFormat.is24HourFormat(getActivity())
+            ).show()
+
+        }
     }
+
 
     private fun setupObservers(params: Map<String, String>) {
         try {
@@ -105,7 +171,7 @@ class BarStatus : Fragment() {
 
     fun sendResponse(reserveTable: ReserveTable) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (reserveTable.status == 200) {
 
@@ -116,11 +182,13 @@ class BarStatus : Fragment() {
                     .build()
                 Constants.tableNo = root!!.table_num.text.toString()
 
-                findNavController().navigate(
-                    R.id.action_barStatus_to_successStatus,
-                    bundle,
-                    navOptions
-                )
+                /*   findNavController().navigate(
+                       R.id.action_barStatus_to_successStatus,
+                       bundle,
+                       navOptions
+                   )*/
+                findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
+
 
             } else {
 

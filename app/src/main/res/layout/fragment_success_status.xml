@@ -53,29 +53,20 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:textColor="@color/White"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/_15sdp"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
+                    android:maxLines="2"
                     android:text="@string/msgbook"
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:textColor="@color/White"
-                    android:textSize="16sp"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text="@string/msgtablenum"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:id="@+id/tablenum"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/tablebookname"
                     android:layout_width="wrap_content"
-                    android:inputType="number"
                     android:gravity="center"
                     android:text="00"
-                    android:textSize="60sp"
+                    android:textSize="@dimen/_18ssp"
                     android:textStyle="bold"
                     android:textColor="@color/White"
                     android:layout_height="wrap_content" />

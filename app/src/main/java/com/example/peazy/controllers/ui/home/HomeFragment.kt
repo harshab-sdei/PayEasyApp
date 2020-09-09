@@ -5,11 +5,17 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
@@ -20,8 +26,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.peazy.R
+import com.example.peazy.controllers.ui.home.adepter.CustomInfoWindowGoogleMap
+import com.example.peazy.controllers.ui.home.adepter.MapBarAdepter
 import com.example.peazy.controllers.ui.menu.MenuFragment
+import com.example.peazy.models.editprofile.InfoWindowData
 import com.example.peazy.models.nearby.Bar
 import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.utility.AppUtility
@@ -41,6 +51,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import retrofit2.Response
 import java.util.*
 
@@ -63,13 +75,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
     private var permissionsList: ArrayList<String>? = null
     lateinit var mapFragment: SupportMapFragment
     var listbar = ArrayList<Bar>()
+    private lateinit var viewAdapter: MapBarAdepter
 
     var locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             for (location in locationResult.locations) {
                 employeeLocation = LatLng(location.latitude, location.longitude)
-                //mMap.addMarker(new MarkerOptions().position(sydney).title("My Location"));
-                //mMap.addMarker(new MarkerOptions().position(sydney).title("My Location"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(employeeLocation))
                 mMap.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(
@@ -99,7 +110,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
             ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-
+        statusCheck()
         if (!checkLocationPermission()) {
 
             getPermissions()
@@ -113,6 +124,19 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         }
         if (!isGooglePlayServicesAvailable()) {
         }
+
+        root.ed_serch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                viewAdapter.getFilter().filter(s)
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
         try {
 
 
@@ -141,7 +165,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
 
                 // Update margins, set to 10dp
                 val margin = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 10F,
+                    TypedValue.COMPLEX_UNIT_DIP, 5F,
                     resources.displayMetrics
                 ).toInt()
                 params.setMargins(margin, margin, margin, margin)
@@ -152,22 +176,42 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
             e.printStackTrace()
         }
 
-        /*   homeBinding.findBar.setOnClickListener{
-               var lat= mMap.myLocation.latitude
-               var longi= mMap.myLocation.longitude
-               val sydney = LatLng(lat, longi)
-
-               *//*  val params=mapOf("key" to Constants.googleapi,
-                  "location" to  sydney,
-                  "radius" to Constants.radius,
-                  "types" to "bar")*//*
-            val params=mapOf("key" to Constants.googleapi,
-                "query" to homeBinding.edSerch.text.toString())
-        }*/
 
 
-        //   activity?.let { themeNavAndStatusBar(it) }
+        homeViewModel.barlist.observe(this.requireActivity(), androidx.lifecycle.Observer {
+            try {
+                viewAdapter = MapBarAdepter(
+                    it
+                ) { selsectItem: Bar -> clickOnListOfBarItem(selsectItem) }
+
+                val spanCount = 3 // 3 columns
+
+                // use a linear layout manager
+                recycle_mapbar.layoutManager = GridLayoutManager(this.requireContext(), spanCount)
+                recycle_mapbar.adapter = viewAdapter
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        })
+
+
         return root
+    }
+
+    private fun clickOnListOfBarItem(selsectItem: Bar) {
+        try {
+            Constants.addcartlist.clear()
+            MenuFragment.itemCount = 0
+            MenuFragment.price_total = 0.0
+
+            val bundle = Bundle()
+            var list = ArrayList<Bar>()
+            list.add(selsectItem)
+            bundle.putSerializable("bardata", list)
+            findNavController().navigate(R.id.action_nav_home_to_barDetailFragment, bundle)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun checkLocationPermission(): Boolean {
@@ -199,24 +243,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         }
     }
 
-    private fun addPermission(
-        permissionsList: MutableList<String>,
-        permission: String
-    ): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                this.requireActivity(),
-                permission
-            ) !== PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(permission)
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(
-                    this.requireActivity(),
-                    permission
-                )
-            ) return false
-        }
-        return true
-    }
 
     override fun onMapReady(googleMap: GoogleMap) {
 
@@ -245,7 +271,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
                     listbar.get(i).address.latlong.coordinate.get(1),
                     listbar.get(i).address.latlong.coordinate.get(0),
                     listbar.get(i).name,
-                    listbar.get(i).address.street + ",\n" + listbar.get(i).address.city
+                    listbar.get(i).address.street + ",\n" + listbar.get(i).address.city,
+                    4
                 )
             }
         } catch (e: Exception) {
@@ -277,11 +304,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
                     MenuFragment.itemCount = 0
                     MenuFragment.price_total = 0.0
 
-                    val tagid: Int = marker.tag as Int
+                    val info: InfoWindowData = marker.tag as InfoWindowData
                     val bundle = Bundle()
                     var list = ArrayList<Bar>()
 
-                    list.add(listbar.get(tagid))
+                    list.add(listbar.get(info.tagid))
                     bundle.putSerializable("bardata", list)
                     findNavController().navigate(R.id.action_nav_home_to_barDetailFragment, bundle)
                 } catch (e: Exception) {
@@ -293,24 +320,39 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
 
     protected fun createMarker(
         tagid: Int, latitude: Double, longitude: Double,
-        title: String?, snippet: String?
+        title: String?, snippet: String?, rating: Int
     ): Marker? {
         var marker: Marker? = null
         val icon =
             BitmapDescriptorFactory.fromResource(R.drawable.pin)
 
-        marker = mMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title(title)
-                .snippet(snippet)
-                .icon(icon)
+        /* marker = mMap.addMarker(
+             MarkerOptions()
+                 .position(LatLng(latitude, longitude))
+                 .anchor(0.5f, 0.5f)
+                 .title(title)
+                 .snippet(snippet)
+                 .icon(icon)
 
-        )
-        marker.tag = tagid
+         )
+         marker.tag = tagid
+ */
+        val markerOptions = MarkerOptions()
+        markerOptions.position(LatLng(latitude, longitude))
+            .title(title)
+            .snippet(snippet)
+            .icon(icon)
 
-        return marker
+        val info = InfoWindowData(tagid, title!!, snippet!!, rating)
+
+        val customInfoWindow = CustomInfoWindowGoogleMap(this.requireContext())
+        mMap.setInfoWindowAdapter(customInfoWindow)
+
+        val m = mMap.addMarker(markerOptions)
+        m.tag = info
+        m.showInfoWindow()
+
+        return m
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -486,36 +528,30 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
 
     fun sendResponse(nearByBar: NearByBar) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (nearByBar.status == 200) {
-                listbar = nearByBar.res.bar as ArrayList<Bar>
-                if (listbar.size > 0)
-                    mapFragment.getMapAsync(this)
-
                 UserPreferenc.setStringPreference(
                     Constants.BAR_DETAIL_IMG_PATH,
                     "" + nearByBar.res.img_base_path
                 )
-
+                listbar = nearByBar.res.bar as ArrayList<Bar>
+                homeViewModel.barlist.value = nearByBar.res.bar as ArrayList<Bar>
+                Collections.sort(homeViewModel.barlist.value,
+                    Comparator { c1, c2 -> c1.distance.compareTo(c2.distance) })
+                if (listbar.size > 0)
+                    mapFragment.getMapAsync(this)
 
             } else {
                 val errors = nearByBar.err
-                if (errors.errCode == 5) {
-                    AppUtility.getInstance().alertDialogWithSingleButton(
-                        this.requireContext(),
-                        "Error",
-                        "Error in  Sign Up"
-                    )
 
-                } else {
                     AppUtility.getInstance()
                         .alertDialogWithSingleButton(
                             this.requireContext(),
                             "Error",
                             "" + errors.msg
                         )
-                }
+
             }
 
 
@@ -524,6 +560,33 @@ class HomeFragment : Fragment(), OnMapReadyCallback, ConnectionCallbacks,
         }
     }
 
+    fun statusCheck(): Boolean {
+        val manager: LocationManager =
+            this.requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps()
+            return false
+        }
+        return true
+    }
 
+    private fun buildAlertMessageNoGps() {
+        val builder: android.app.AlertDialog.Builder =
+            android.app.AlertDialog.Builder(this.requireActivity())
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface?, id: Int) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+            })
+            .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface, id: Int) {
+                    dialog.cancel()
+                }
+            })
+        val alert: android.app.AlertDialog? = builder.create()
+        alert?.show()
+    }
 }
 

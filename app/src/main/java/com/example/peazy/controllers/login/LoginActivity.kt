@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.peazy.R
 import com.example.peazy.controllers.HomeActivity
+import com.example.peazy.controllers.choosepayment.ChoosePayMethod
 import com.example.peazy.controllers.singnup.SignUpActivity
 import com.example.peazy.databinding.ActivityLoginBinding
 import com.example.peazy.models.signup.SignUP
@@ -215,16 +216,32 @@ class LoginActivity : AppCompatActivity() {
             if (signUP.status == 200) {
 
                 if(ishome) {
-
+                    if (signUP.res.user != null) {
+                        UserPreferenc.setStringPreference(
+                            Constants.USER_NAME,
+                            "" + signUP.res.user.name
+                        )
+                        UserPreferenc.setStringPreference(
+                            Constants.USER_EMAIL,
+                            "" + signUP.res.user.email
+                        )
+                    }
                     UserPreferenc.setStringPreference(
                         Constants.ACCESS_TOKEN,
                         "" + signUP.res.access_token
                     )
+                    if (signUP.res.user.card == null) {
+                        UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
+                        val intent = Intent(this@LoginActivity, ChoosePayMethod::class.java)
+                        startActivity(intent)
+                    } else {
+                        UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
+                        UserPreferenc.setBooleanPreference(Constants.IS_USER_Choose_Mode, true)
 
-                    UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
-                    val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
                 }else
                 {
                     Toast.makeText(this,"Successfully email sent.",Toast.LENGTH_LONG).show()

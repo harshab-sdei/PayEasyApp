@@ -1,22 +1,33 @@
 package com.example.peazy.controllers.edit_profile
 
 import android.app.ProgressDialog
-import androidx.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.amulyakhare.textdrawable.TextDrawable
+import com.example.peazy.MainActivity
 import com.example.peazy.R
 import com.example.peazy.databinding.EditProfileFragmentBinding
-import com.example.peazy.databinding.MainFragment3Binding
-import com.example.peazy.models.addpaycard.AddPayCard
+import com.example.peazy.models.changepws.ChangePWS
 import com.example.peazy.models.editprofile.EditProfile
+import com.example.peazy.models.logout.Logout
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
+import com.example.peazy.utility.Status
+import com.example.peazy.utility.appconfig.UserPreferenc
+import kotlinx.android.synthetic.main.add_instructions_dialog.view.*
+import kotlinx.android.synthetic.main.change_password.view.*
 import retrofit2.Response
+
 
 class EditProfileFragment : Fragment() {
 
@@ -43,7 +54,25 @@ class EditProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(EditProfileViewModel::class.java)
 
-        databinding.btLogin.setOnClickListener {
+        databinding.pfName.text = UserPreferenc.getStringPreference(Constants.USER_NAME, "")
+        databinding.pfEmail.text = UserPreferenc.getStringPreference(Constants.USER_EMAIL, "")
+        try {
+            val drawable = TextDrawable.builder()
+                .buildRoundRect(
+                    AppUtility.getInstance().getFirstandLast(databinding.pfName.text.toString()),
+                    R.color.orange,
+                    12
+                )
+
+            databinding.profilepic.setImageDrawable(drawable)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        databinding.btChangepws.setOnClickListener {
+            showDialog()
+        }
+        /*databinding.btLogin.setOnClickListener {
             if (AppUtility.getInstance()
                     .validateLetters(databinding.editTextname.text.toString()) &&
                 AppUtility.getInstance()
@@ -75,6 +104,10 @@ class EditProfileFragment : Fragment() {
                 }
             }
 
+        }*/
+
+        databinding.btLogout.setOnClickListener {
+            setLogoutObservers()
         }
     }
 
@@ -162,6 +195,198 @@ class EditProfileFragment : Fragment() {
 
         } catch (e: Exception) {
             Log.e(TAG, e.message)
+        }
+    }
+
+    private fun setLogoutObservers() {
+        try {
+            viewModel.logoutUser()
+                .observe(this.requireActivity(), Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+
+                                resource.data?.let { response: Response<Logout> ->
+                                    response.body().let { logout ->
+                                        logout?.let { it1 ->
+                                            sendResponse(it1)
+                                        }
+                                    }
+                                }
+
+                                Log.d(
+                                    "TAG",
+                                    "Response" + resource.data?.let { response: Response<Logout> ->
+                                        response.body().toString()
+                                    })
+                            }
+                            Status.ERROR -> {
+                                try {
+                                    progressDialog.dismiss()
+                                    Log.e("TAG", "" + resource.message)
+                                } catch (e: Exception) {
+                                    Log.e("TAG", e.message)
+                                }
+
+                            }
+                            Status.LOADING -> {
+                                progressDialog = ProgressDialog(this.requireContext())
+
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
+
+
+                            }
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("TAG", e.message)
+        }
+    }
+
+    fun sendResponse(signUP: Logout) {
+        try {
+            progressDialog.dismiss()
+
+            if (signUP.status == 200) {
+                UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, false)
+                UserPreferenc.setBooleanPreference(Constants.IS_USER_Choose_Mode, false)
+
+                val homeIntent = Intent(this.requireActivity(), MainActivity::class.java)
+                startActivity(homeIntent)
+                requireActivity().finish()
+
+
+            } else {
+                val errors = signUP.err
+                if (errors.errCode == 5) {
+                    AppUtility.getInstance().alertDialogWithSingleButton(
+                        this.requireActivity(),
+                        "Error",
+                        "Error in  Sign Up"
+                    )
+                } else {
+                    AppUtility.getInstance()
+                        .alertDialogWithSingleButton(
+                            this.requireActivity(),
+                            "Error",
+                            "" + errors.msg
+                        )
+                }
+            }
+
+
+        } catch (e: Exception) {
+            Log.e("TAG", e.message)
+        }
+    }
+
+
+    fun showDialog() {
+        val mDialogView =
+            LayoutInflater.from(this.requireContext())
+                .inflate(R.layout.change_password, null)
+        val mBuilder = AlertDialog.Builder(this.requireContext())
+            .setView(mDialogView)
+
+        val mAlertDialog = mBuilder.show()
+
+        mDialogView.close.setOnClickListener {
+            mAlertDialog.dismiss()
+        }
+
+        mDialogView.bt_changepws.setOnClickListener {
+            if (mDialogView.edold_pass.text.toString().isEmpty()) {
+                mDialogView.edold_pass.error = "Password is not empty"
+            }
+            if (mDialogView.editpassword.text.toString().isEmpty()) {
+                mDialogView.editpassword.error = "Password is not empty"
+            } else {
+                val params = mapOf(
+                    "old_pass" to mDialogView.edold_pass.text.toString(),
+                    "new_pass" to mDialogView.editpassword.text.toString()
+                )
+                setChangePasswordObservers(params)
+            }
+        }
+    }
+
+    private fun setChangePasswordObservers(params: Map<String, String>) {
+        try {
+            viewModel.changePassword(params)
+                .observe(this.requireActivity(), Observer {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+
+                                resource.data?.let { response: Response<ChangePWS> ->
+                                    response.body().let { logout ->
+                                        logout?.let { it1 ->
+                                            sendChangePwsResponse(it1)
+                                        }
+                                    }
+                                }
+
+                                Log.d(
+                                    "TAG",
+                                    "Response" + resource.data?.let { response: Response<ChangePWS> ->
+                                        response.body().toString()
+                                    })
+                            }
+                            Status.ERROR -> {
+                                try {
+                                    progressDialog.dismiss()
+                                    Log.e("TAG", "" + resource.message)
+                                } catch (e: Exception) {
+                                    Log.e("TAG", e.message)
+                                }
+
+                            }
+                            Status.LOADING -> {
+                                progressDialog = ProgressDialog(this.requireContext())
+
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
+
+
+                            }
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("TAG", e.message)
+        }
+    }
+
+    fun sendChangePwsResponse(changePWS: ChangePWS) {
+        try {
+            progressDialog.dismiss()
+
+            if (changePWS.status == 200) {
+
+
+            } else {
+                val errors = changePWS.err
+                if (errors.errCode == 5) {
+                    AppUtility.getInstance().alertDialogWithSingleButton(
+                        this.requireActivity(),
+                        "Error",
+                        "Error in  change Password"
+                    )
+                } else {
+                    AppUtility.getInstance()
+                        .alertDialogWithSingleButton(
+                            this.requireActivity(),
+                            "Error",
+                            "" + errors.msg
+                        )
+                }
+            }
+
+
+        } catch (e: Exception) {
+            Log.e("TAG", e.message)
         }
     }
 }

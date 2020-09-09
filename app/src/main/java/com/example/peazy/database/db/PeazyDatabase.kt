@@ -2,8 +2,6 @@ package com.example.peazy.database.db
 
 import android.content.Context
 import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteOpenHelper
-import com.example.peazy.models.menu_item.Item
 import com.example.peazy.utility.Constants
 
 //@Database(entities = [Item::class], version = 1)

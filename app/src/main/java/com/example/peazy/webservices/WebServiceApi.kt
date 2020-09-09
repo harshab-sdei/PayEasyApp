@@ -3,10 +3,10 @@ package com.example.peazy.webservices
 import com.example.peazy.models.addpaycard.AddPayCard
 import com.example.peazy.models.booktable.BookTable
 import com.example.peazy.models.category.MenuCategory
+import com.example.peazy.models.changepws.ChangePWS
 import com.example.peazy.models.editprofile.EditProfile
 import com.example.peazy.models.logout.Logout
-import com.example.peazy.models.menu_item.BarMenuItem
-import com.example.peazy.models.menuitems.MenuItems
+import com.example.peazy.models.menu_item.MenuItems
 import com.example.peazy.models.nearby.NearByBar
 import com.example.peazy.models.payorder.PayOrder
 import com.example.peazy.models.reserve_table.ReserveTable
@@ -41,6 +41,10 @@ interface WebServiceApi {
     @PUT("/api/v2/user/edit")
     suspend fun editProfile(@FieldMap params: Map<String, String>): Response<EditProfile>
 
+    @FormUrlEncoded
+    @PUT("/api/v2/user/change-password")
+    suspend fun changePws(@FieldMap params: Map<String, String>): Response<ChangePWS>
+
     @DELETE("/api/v2/user/logout")
     suspend fun logoutUser(): Response<Logout>
 
@@ -57,6 +61,10 @@ interface WebServiceApi {
     suspend fun reserveTable(@FieldMap params: Map<String, String>): Response<ReserveTable>
 
     @FormUrlEncoded
+    @PUT("/api/v2/user/change/reserve/table")
+    suspend fun changeReserveTable(@FieldMap params: Map<String, String>): Response<ReserveTable>
+
+    @FormUrlEncoded
     @POST("/api/v2/user/card/add")
     suspend fun addCard(@FieldMap params: Map<String, String>): Response<AddPayCard>
 
@@ -64,9 +72,10 @@ interface WebServiceApi {
     suspend fun viewCard(): Response<ViewCard>
 
 
+    @JvmSuppressWildcards
     @FormUrlEncoded
     @POST("/api/v2/user/pay")
-    suspend fun payOrder(@FieldMap params: Map<String, String>): Response<PayOrder>
+    suspend fun payOrder(@FieldMap params: Map<String, Any?>): Response<PayOrder>
 
     @FormUrlEncoded
     @POST("/api/v2/user/verify/pay")

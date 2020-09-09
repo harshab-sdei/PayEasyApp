@@ -84,9 +84,12 @@ class SubSubCategoryAdepter(
             }
         }
         if (!isinsert) {
-            var img: JSONArray = JSONArray(item.image)
+            var img: String? = ""
+            if (!item.image.isNullOrEmpty()) {
+                img = item.image.get(0)
+            }
             var addItem = Add_Item(
-                img.optString(0),
+                img!!,
                 item.item_id,
                 item.name,
                 item.price,

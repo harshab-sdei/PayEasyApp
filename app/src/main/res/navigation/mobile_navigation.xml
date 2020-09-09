@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_barDetailFragment_to_menuFragment"
             app:destination="@id/menuFragment" />
+        <action
+            android:id="@+id/action_barDetailFragment_to_tableBookMapFragment"
+            app:destination="@id/tableBookMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/menuFragment"
@@ -75,6 +78,9 @@
         <action
             android:id="@+id/action_successStatus_to_nav_home"
             app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_successStatus_to_tableBookMapFragment"
+            app:destination="@id/tableBookMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/addCartFragment"
@@ -98,7 +104,7 @@
     <fragment
         android:id="@+id/nav_Profile"
         android:name="com.example.peazy.controllers.edit_profile.EditProfileFragment"
-        android:label="edit_profile_fragment"
+        android:label="Profile"
         tools:layout="@layout/edit_profile_fragment" />
     <fragment
         android:id="@+id/orderAcceptFragment"
@@ -111,5 +117,17 @@
         <action
             android:id="@+id/action_orderAcceptFragment_to_menuFragment"
             app:destination="@id/menuFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tableBookMapFragment"
+        android:name="com.example.peazy.controllers.tablebookmap.TableBookMapFragment"
+        android:label=""
+        tools:layout="@layout/table_book_map_fragment">
+        <action
+            android:id="@+id/action_tableBookMapFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_tableBookMapFragment_to_barDetailFragment"
+            app:destination="@id/barDetailFragment" />
     </fragment>
 </navigation>

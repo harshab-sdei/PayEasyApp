@@ -11,7 +11,7 @@ class MainViewModel : ViewModel() {
     var sub_total = MutableLiveData<Double>()
     var _total = MutableLiveData<Double>()
 
-    fun payOrder(params: Map<String, String>) = liveData(Dispatchers.IO) {
+    fun payOrder(params: Map<String, Any?>) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
             emit(Resource.success(data = RetrofitInsatance.apiService.payOrder(params)))

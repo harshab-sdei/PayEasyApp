@@ -11,6 +11,6 @@
     <dimen name="space_5dp">5dp</dimen>
     <dimen name="padding_10">5dp</dimen>
     <dimen name="textsize_10">10sp</dimen>
-    <dimen name="button_height">100dp</dimen>
+    <dimen name="button_height">80dp</dimen>
 
 </resources>

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import com.example.peazy.MainActivity
 import com.example.peazy.R
+import com.example.peazy.controllers.choosepayment.ChoosePayMethod
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.appconfig.UserPreferenc
@@ -34,7 +35,12 @@ class SplashScreen : AppCompatActivity() {
 
             homeIntent = Intent(this@SplashScreen, MainActivity::class.java)
         } else {
-            homeIntent = Intent(this@SplashScreen, HomeActivity::class.java)
+            if (!UserPreferenc.getBooleanPreference(Constants.IS_USER_Choose_Mode, false)) {
+                homeIntent = Intent(this@SplashScreen, ChoosePayMethod::class.java)
+
+            } else {
+                homeIntent = Intent(this@SplashScreen, HomeActivity::class.java)
+            }
         }
         Handler().postDelayed({
             //Do some stuff here, like implement deep linking

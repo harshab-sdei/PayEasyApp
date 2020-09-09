@@ -155,6 +155,7 @@ class SignUpActivity : AppCompatActivity() {
             if (signUP.status == 200) {
 
                 if (signUP.res.access_token.isEmpty()) {
+
                     AppUtility.getInstance().alertDialogWithSingleButton(
                         applicationContext,
                         "Alert",

@@ -1,6 +1,6 @@
 package com.example.peazy.models.menu_item
 
-data class BarMenuItem(
+data class MenuItems(
     val res: Res,
     val status: Int
 )

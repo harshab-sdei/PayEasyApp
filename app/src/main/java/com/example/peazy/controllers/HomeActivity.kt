@@ -3,6 +3,7 @@ package com.example.peazy.controllers
 import android.Manifest
 import android.app.ProgressDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -10,6 +11,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -20,9 +23,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import com.amulyakhare.textdrawable.TextDrawable
+import com.example.peazy.MainActivity
 import com.example.peazy.R
 import com.example.peazy.models.logout.Logout
 import com.example.peazy.utility.AppUtility
@@ -64,16 +68,28 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home,
-                R.id.nav_Profile
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        val txtusernm: TextView = navView.getHeaderView(0).findViewById(R.id.usernm)
+        val txtuseremail: TextView = navView.getHeaderView(0).findViewById(R.id.useremail)
+        val imghome_profilepic: ImageView =
+            navView.getHeaderView(0).findViewById(R.id.home_profilepic)
+        txtusernm.text = UserPreferenc.getStringPreference(Constants.USER_NAME, "")
+        txtuseremail.text = UserPreferenc.getStringPreference(Constants.USER_EMAIL, "")
+        try {
+
+
+            val drawable = TextDrawable.builder()
+                .buildRound(
+                    AppUtility.getInstance().getFirstandLast(txtusernm.text.toString()),
+                    R.color.White
+                )
+
+            imghome_profilepic.setImageDrawable(drawable)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        val appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -81,50 +97,38 @@ class HomeActivity : AppCompatActivity() {
         }
 
         navView.setNavigationItemSelectedListener {
+            val current = navController.currentDestination!!.id
+
             val id: Int = it.getItemId()
 
             if (id == R.id.nav_logout) {
                 alertforLogout("Are You Sure, you want to logout?", "Confirm Alert")
-
             }
+            if (id == R.id.nav_home) {
+                navController.navigate(id)
+            }
+            if (id == R.id.nav_Profile) {
+                navController.navigate(id)
+            }
+
+            drawerLayout.closeDrawers()
+
             true
         }
-
-        /*navView.setNavigationItemSelectedListener { menuItem -> //Checking if the item is in checked state or not, if not set it to checked state.
-            if (menuItem.isChecked()) menuItem.setChecked(false) else menuItem.setChecked(true)
-
-            //Closing drawer on item click
-            drawerLayout.closeDrawers()
-            when (menuItem.getItemId()) {
-
-                else -> {
-                    Toast.makeText(
-                        applicationContext,
-                        resources.getString(R.string.drawer_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    true
-                }
-            }
-        }*/
+        /* setupActionBarWithNavController( navController, drawerLayout)
+         navView.setupWithNavController(navController)*/
 
 
     }
 
-    /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
-         // Inflate the menu; this adds items to the action bar if it is present.
-         menuInflater.inflate(R.menu.home, menu)
-         return true
-     }*/
 
-
-        override fun onSupportNavigateUp(): Boolean {
+    override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
 
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-    fun alertforLogout(msg:String,title:String)
-    {
+
+    fun alertforLogout(msg: String, title: String) {
         val dialogBuilder = AlertDialog.Builder(this@HomeActivity)
 
         // set message of alert dialog
@@ -132,13 +136,12 @@ class HomeActivity : AppCompatActivity() {
             // if the dialog is cancelable
             .setCancelable(false)
             // positive button text and action
-             .setPositiveButton("Proceed", DialogInterface.OnClickListener {
-                 dialog, which ->
-                 setLogoutObservers()
+            .setPositiveButton("Proceed", DialogInterface.OnClickListener { dialog, which ->
+                setLogoutObservers()
             })
             // negative button text and action
-            .setNegativeButton("Cancel", DialogInterface.OnClickListener {
-                    dialog, id -> dialog.cancel()
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+                dialog.cancel()
             })
 
         // create dialog box
@@ -189,7 +192,7 @@ class HomeActivity : AppCompatActivity() {
                             }
                             Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e("TAG", "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e("TAG", e.message)
@@ -199,8 +202,8 @@ class HomeActivity : AppCompatActivity() {
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@HomeActivity)
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -213,11 +216,14 @@ class HomeActivity : AppCompatActivity() {
     }
     fun sendResponse(signUP: Logout) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (signUP.status == 200) {
-                    UserPreferenc.setBooleanPreference(Constants.IS_USER_Login,false)
-                    finish()
+                UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, false)
+                UserPreferenc.setBooleanPreference(Constants.IS_USER_Choose_Mode, false)
+                val homeIntent = Intent(this@HomeActivity, MainActivity::class.java)
+                startActivity(homeIntent)
+                finish()
 
             } else {
                 val errors = signUP.err
