@@ -46,7 +46,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         fun newInstance() = BarDetailFragment()
-        var num_person: Int = 0
+        var num_person: Int = 1
     }
 
     private lateinit var adapter: ViewPagerAdapter
@@ -86,7 +86,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             )
             root.review.setText("" + bar_detail.get(0).total_reviews + " Reviews")
             root.country.setText("Commission " + bar_detail!!.get(0).p_commission + " ")
-            root.detail.setText("" + bar_detail!!.get(0).description)
+            root.detail.setText("" + bar_detail.get(0).description)
             root.time.setText("Open . " + bar_detail.get(0).hours)
             Constants.vat = bar_detail.get(0).vat.toDouble()
             Constants.bar_id = bar_detail.get(0).bar_id
@@ -96,8 +96,11 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             }
             mapFragment!!.getMapAsync(this)
             root.bt_order.setOnClickListener {
+                var bundle = Bundle()
+                bundle.putString("tiltle", bar_detail.get(0).name)
+                bundle.putString("bar_id", bar_detail.get(0).bar_id)
 
-                findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
+                findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
 
             }
             sheetBehavior = BottomSheetBehavior.from(root.bottom_sheet)
@@ -191,7 +194,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
             edit.setText("" + num_person)
         }
         mDialogView.bt_minus.setOnClickListener {
-            if (num_person > 0)
+            if (num_person > 1)
                 num_person--
 
             edit.setText("" + num_person)
@@ -335,10 +338,7 @@ class BarDetailFragment : Fragment(), OnMapReadyCallback {
 
             if (bookTable.status == 200) {
 
-                val bundle = Bundle()
-                bundle.putString("tiltle", "" + root.bartitle.text.toString())
-                bundle.putString("bar_id", "" + bar_detail.get(0).bar_id)
-                findNavController().navigate(R.id.action_barDetailFragment_to_barStatus, bundle)
+                findNavController().navigate(R.id.action_barDetailFragment_to_successStatus)
                 sheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
 
 

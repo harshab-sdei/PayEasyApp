@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
                                     response.body().let { signUP ->
                                         signUP?.let { it1 ->
                                             sendResponse(
-                                                it1,true
+                                                it1, true
                                             )
                                         }
                                     }
@@ -149,8 +149,8 @@ class LoginActivity : AppCompatActivity() {
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@LoginActivity)
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -174,7 +174,7 @@ class LoginActivity : AppCompatActivity() {
                                     response.body().let { signUP ->
                                         signUP?.let { it1 ->
                                             sendResponse(
-                                                it1,false
+                                                it1, false
                                             )
                                         }
                                     }
@@ -187,7 +187,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                             Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -196,8 +196,8 @@ class LoginActivity : AppCompatActivity() {
                             }
                             Status.LOADING -> {
                                 progressDialog = ProgressDialog(this@LoginActivity)
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -211,7 +211,7 @@ class LoginActivity : AppCompatActivity() {
 
     fun sendResponse(signUP: SignUP,ishome:Boolean) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (signUP.status == 200) {
 
@@ -237,6 +237,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         UserPreferenc.setBooleanPreference(Constants.IS_USER_Login, true)
                         UserPreferenc.setBooleanPreference(Constants.IS_USER_Choose_Mode, true)
+                        UserPreferenc.setStringPreference(Constants.PAYMENT_MODE, "1")
 
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         startActivity(intent)

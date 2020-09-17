@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.peazy">
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -25,11 +26,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".controllers.addcard.AddCardActivity"></activity>
-        <activity android:name=".controllers.choosepayment.ChoosePayMethod" />
-        <activity android:name=".controllers.ui.addcart.AddCart" />
-        <activity android:name=".controllers.ui.menu.Menu" />
-        <activity android:name=".controllers.ui.bardetail.BarDetail" />
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,6 +38,16 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".MapsActivity2"
+            android:label="@string/title_activity_maps2"></activity>
+        <activity android:name=".controllers.addcard.AddCardActivity" />
+        <activity android:name=".controllers.choosepayment.ChoosePayMethod" />
+        <activity android:name=".controllers.ui.addcart.AddCart" />
+        <activity android:name=".controllers.ui.menu.Menu" />
+        <activity android:name=".controllers.ui.bardetail.BarDetail" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

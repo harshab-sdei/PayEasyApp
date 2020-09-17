@@ -109,7 +109,7 @@ class MenuFragment : Fragment() {
 
         try {
             root.item_total.text = "" + itemCount + " Item"
-            root.total_price.text = "" + price_total
+            root.total_price.text = "" + String.format("%.2f", price_total)
         } catch (e: java.lang.Exception) {
         }
         sheetBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
@@ -189,7 +189,7 @@ class MenuFragment : Fragment() {
         super.onResume()
         try {
             root.item_total.text = "" + itemCount + " Item"
-            root.total_price.text = "" + price_total
+            root.total_price.text = "" + String.format("%.2f", price_total)
         } catch (e: java.lang.Exception) {
         }
     }
@@ -242,7 +242,7 @@ class MenuFragment : Fragment() {
 
     fun sendResponse(menuCategory: MenuCategory) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (menuCategory.status == 200) {
                 UserPreferenc.setStringPreference(
@@ -328,7 +328,7 @@ class MenuFragment : Fragment() {
 
     fun sendResponseOfSubcategory(subCategory: SubCategory) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (subCategory.status == 200) {
                 listsubcat = subCategory.res.subcategory as ArrayList<SubcategoryX>
@@ -396,8 +396,8 @@ class MenuFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -517,8 +517,8 @@ class MenuFragment : Fragment() {
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -533,7 +533,7 @@ class MenuFragment : Fragment() {
 
     fun sendResponseOfMenuItem(barMenuItem: MenuItems) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (barMenuItem.status == 200) {
                 UserPreferenc.setStringPreference(

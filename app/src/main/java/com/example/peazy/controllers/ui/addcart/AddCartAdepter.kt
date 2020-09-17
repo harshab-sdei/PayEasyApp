@@ -49,13 +49,11 @@ class AddCartAdepter(var item: ArrayList<Add_Item>, val clickLister: (Add_Item) 
             if (item.get(position).num_of_unit == 0) {
                 removeItem(position)
             }
-            notifyDataSetChanged()
         }
 
         holder.view.add_cart.setOnClickListener {
             holder.view.txtitem.text = item.get(position).num_of_unit++.toString()
             clickLister(item.get(position))
-            notifyDataSetChanged()
             MenuFragment.itemCount++
             Constants.addcartlist.get(position).num_of_unit = item.get(position).num_of_unit
             MenuFragment.price_total += item.get(position).price

@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.fragment_success_status.view.*
 class SuccessStatus : Fragment() {
 
     var root: View? = null
-    var bar_id: String? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,7 +32,6 @@ class SuccessStatus : Fragment() {
 
 
         try {
-            bar_id = requireArguments().getString("bar_id").toString()
 
             root!!.tablebookname.text = UserPreferenc.getStringPreference(Constants.USER_NAME, "")
 
@@ -43,17 +41,17 @@ class SuccessStatus : Fragment() {
             this.requireActivity().onBackPressed()
         }
         root!!.bt_odernow.setOnClickListener {
-            val navOptions: NavOptions = NavOptions.Builder()
+           /* val navOptions: NavOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.barDetailFragment, true)
                 .build()
             var bundle = Bundle()
             bundle.putString("bar_id", "" + bar_id)
-            /*findNavController().navigate(
+            findNavController().navigate(
                 R.id.action_successStatus_to_menuFragment,
                 bundle,
                 navOptions
             )*/
-            findNavController().navigate(R.id.action_successStatus_to_tableBookMapFragment)
+            findNavController().navigate(R.id.action_successStatus_to_nav_home)
 
         }
 

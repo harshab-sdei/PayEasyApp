@@ -1,6 +1,8 @@
 package com.example.peazy.controllers.paymentmethod
 
+import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Build
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -25,10 +27,17 @@ import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.models.viewcard.ViewCard
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
+import com.example.peazy.utility.appconfig.UserPreferenc
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.stripe.android.ApiResultCallback
+import com.stripe.android.PaymentIntentResult
+import com.stripe.android.Stripe
+import com.stripe.android.model.*
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Response
+import java.lang.ref.WeakReference
 import java.util.ArrayList
 
 class PaymentMethodFragment : Fragment() {
@@ -39,13 +48,14 @@ class PaymentMethodFragment : Fragment() {
 
     }
 
+    private lateinit var stripe: Stripe
+    private lateinit var paymentIntentClientSecret: String
     var TAG = "PaymentMethodFragment"
     private lateinit var viewModel: PaymentMethodViewModel
     lateinit var databinding: PaymentMethodFragmentBinding
     lateinit var progressDialog: ProgressDialog
-    lateinit var addcartlist: Map<String, Any>
-    var amount: Int? = 0
-    var paymentmode: Int? = 0
+
+    var card = PaymentMethodCreateParams.Card.Builder()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,23 +63,26 @@ class PaymentMethodFragment : Fragment() {
         databinding =
             DataBindingUtil.inflate(inflater, R.layout.payment_method_fragment, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        paymentIntentClientSecret = Constants.stripToken!!
 
-        /* addcartlist =
-             (requireArguments().getSerializable("cartdata") as Map<String,Any>)*/
+
         return databinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(PaymentMethodViewModel::class.java)
+        stripe = Stripe(
+            this.requireActivity(),
+            "pk_test_51H5tN2LsM2nr7hcERbIwzT4orsgMPcCVwitTE4OqhUQUjYMxUTvPTHoIsC34WW6Fc77r034TrRvoBNTbBf5sKKR900AjMbtf18"
+        )
+
+        setviewCardObservers()
 
         if (Build.MANUFACTURER.toString().equals("Samsung")) {
             databinding.samsungpay.visibility = View.VISIBLE
         }
-
         databinding.btBycash.setOnClickListener {
-            paymentmode = 2
-            oderConfirm()
         }
         databinding.editcardnum.addTextChangedListener(object : TextWatcher {
             private var current = ""
@@ -109,7 +122,20 @@ class PaymentMethodFragment : Fragment() {
             }
         })
 
+        databinding.payButton.setOnClickListener {
+            progressDialog = ProgressDialog(this.requireContext())
+            progressDialog.setMessage("loading...")
+            progressDialog.show()
+            card.setCvc(databinding.edcvv.text.toString())
 
+            var cardparm = PaymentMethodCreateParams.create(card.build())
+
+            val confirmParams = ConfirmPaymentIntentParams
+                .createWithPaymentMethodCreateParams(cardparm, paymentIntentClientSecret)
+            stripe.confirmPayment(this, confirmParams)
+
+
+        }
 
         databinding.editexdate.addTextChangedListener(object : TextWatcher {
             private var mSeperator = false
@@ -242,11 +268,11 @@ class PaymentMethodFragment : Fragment() {
 
                 setAddCardObservers(params)
             }
+
+
         }
 
-        databinding.btPayNow.setOnClickListener {
-            Constants.stripToken?.let { it1 -> setconfirmpayObservers(it1) }
-        }
+
         try {
             var str: String? = requireArguments().getString(Constants.totalamount).toString()
             databinding.totalPrice.setText(str)
@@ -291,8 +317,8 @@ class PaymentMethodFragment : Fragment() {
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -306,7 +332,7 @@ class PaymentMethodFragment : Fragment() {
 
     fun sendResponse(addCard: AddPayCard) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (addCard.status == 200) {
                 AppUtility.getInstance()
@@ -316,6 +342,7 @@ class PaymentMethodFragment : Fragment() {
                         "Successfully Add Your Card"
                     )
                 clearInput()
+                setviewCardObservers()
 
 
             } else {
@@ -408,7 +435,7 @@ class PaymentMethodFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -418,8 +445,8 @@ class PaymentMethodFragment : Fragment() {
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -434,11 +461,21 @@ class PaymentMethodFragment : Fragment() {
 
     fun sendResponseforviewcard(viewCard: ViewCard) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (viewCard.status == 200) {
+
+                progressDialog.dismiss()
+
+                databinding.layViewcard.visibility = View.VISIBLE
                 val data = viewCard.res.card
                 setcardDetail(data.card_number, data.card_holder_name, data.expiry_date)
+                var str = data.expiry_date.toString().split("/")
+
+
+                card.setNumber(data.card_number)
+                card.setExpiryMonth(str.get(0).toInt())
+                card.setExpiryYear(str.get(1).toInt())
 
             } else {
                 val errors = viewCard.err
@@ -481,7 +518,7 @@ class PaymentMethodFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -489,10 +526,6 @@ class PaymentMethodFragment : Fragment() {
 
                             }
                             com.example.peazy.utility.Status.LOADING -> {
-                                progressDialog = ProgressDialog(this.requireContext())
-
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
 
 
                             }
@@ -506,13 +539,11 @@ class PaymentMethodFragment : Fragment() {
 
     fun sendResponseForConfirm(verifyPay: VerifyPay) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (verifyPay.status == 200) {
-                /*      var bundle=Bundle()
-                      bundle.putString(Constants.totalamount,binding.totalPrice.text.toString())
-                      findNavController().navigate(R.id.action_addCartFragment_to_paymentMethodFragment,bundle)
-      */
+
+                findNavController().navigate(R.id.action_paymentMethodFragment_to_orderAcceptFragment)
 
             } else {
                 val errors = verifyPay.err
@@ -531,87 +562,54 @@ class PaymentMethodFragment : Fragment() {
         }
     }
 
-    fun oderConfirm() {
 
-        val params = mapOf(
-            "bar_id" to "" + Constants.bar_id,
-            "amount" to "" + amount,
-            "mode" to "" + paymentmode
-        )
-        Log.d(TAG, "request json" + params)
-        setObservers(params)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val weakActivity = WeakReference<Activity>(this.requireActivity())
+        // Handle the result of stripe.confirmPayment
+        stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
+            override fun onSuccess(result: PaymentIntentResult) {
+                val paymentIntent = result.intent
+                val status = paymentIntent.status
+                if (status == StripeIntent.Status.Succeeded) {
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    weakActivity.get()?.let { activity ->
 
-    }
-
-    private fun setObservers(params: Map<String, String>) {
-        try {
-            viewModel.payOrder(params)
-                .observe(this.requireActivity(), androidx.lifecycle.Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            com.example.peazy.utility.Status.SUCCESS -> {
-
-                                resource.data?.let { response: Response<PayOrder> ->
-                                    response.body().let { signUP ->
-                                        signUP?.let { it1 ->
-                                            sendResponse(it1)
-                                        }
-                                    }
-                                }
-                                Log.d(
-                                    TAG,
-                                    "Response" + resource.data?.let { response: Response<PayOrder> ->
-                                        response.body().toString()
-                                    })
-                            }
-                            com.example.peazy.utility.Status.ERROR -> {
-                                try {
-                                    progressDialog!!.dismiss()
-                                    Log.e(TAG, "" + resource.message)
-                                } catch (e: Exception) {
-                                    Log.e(TAG, e.message)
-                                }
-
-                            }
-                            com.example.peazy.utility.Status.LOADING -> {
-                                progressDialog = ProgressDialog(this.requireContext())
-
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                        Log.d(TAG, "regest Id" + gson.toJson(paymentIntent))
+                        setconfirmpayObservers(Constants.stripToken!!)
 
 
-                            }
-                        }
                     }
-                })
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
-        }
-    }
+                } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
+                    progressDialog.dismiss()
 
-    fun sendResponse(payOrder: PayOrder) {
-        try {
-            progressDialog!!.dismiss()
+                    weakActivity.get()?.let { activity ->
+                        AppUtility.getInstance()
+                            .alertDialogWithSingleButton(
+                                activity,
+                                "Payment failed",
+                                "" + paymentIntent.lastPaymentError?.message.orEmpty()
+                            )
 
-            if (payOrder.status == 200) {
-                var bundle = Bundle()
-                Constants.stripToken = payOrder.res.stripe_token.toString()
+                    }
+                }
 
-            } else {
-                val errors = payOrder.err
-
-                AppUtility.getInstance()
-                    .alertDialogWithSingleButton(
-                        this.requireContext(),
-                        "Error",
-                        "" + errors.msg
-                    )
             }
 
+            override fun onError(e: Exception) {
+                progressDialog.dismiss()
 
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
-        }
+                weakActivity.get()?.let { activity ->
+                    AppUtility.getInstance()
+                        .alertDialogWithSingleButton(
+                            activity,
+                            "Payment failed",
+                            "" + e.message.toString()
+                        )
+
+                }
+            }
+        })
     }
 
 }

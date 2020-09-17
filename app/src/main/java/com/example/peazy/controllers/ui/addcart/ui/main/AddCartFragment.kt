@@ -1,7 +1,9 @@
 package com.example.peazy.controllers.ui.addcart.ui.main
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,12 +24,13 @@ import com.example.peazy.controllers.ui.addcart.AddCartAdepter
 import com.example.peazy.databinding.MainFragment3Binding
 import com.example.peazy.models.addcart.Add_Item
 import com.example.peazy.models.payorder.PayOrder
-import com.example.peazy.models.verifypay.VerifyPay
 import com.example.peazy.utility.AppUtility
 import com.example.peazy.utility.Constants
 import com.example.peazy.utility.appconfig.UserPreferenc
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.stripe.android.Stripe
 import kotlinx.android.synthetic.main.add_instructions_dialog.view.*
+import kotlinx.android.synthetic.main.add_instructions_dialog.view.in_close
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Response
@@ -41,6 +44,7 @@ class AddCartFragment : Fragment() {
         fun newInstance() = AddCartFragment()
     }
 
+    var isfirst: Boolean? = false
     val TAG: String = "AddCartFragment"
     var sub_total: Double = 0.0
     var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
@@ -48,9 +52,10 @@ class AddCartFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     lateinit var binding: MainFragment3Binding
     lateinit var progressDialog: ProgressDialog
-    var addcartlist = ArrayList<Add_Item>()
     var instruction: String? = null
     var tip: Int? = 0
+    private lateinit var stripe: Stripe
+    private lateinit var paymentIntentClientSecret: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,7 +72,6 @@ class AddCartFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         try {
-            addcartlist = Constants.addcartlist
 
             updateOrderCalculation()
 
@@ -137,7 +141,7 @@ class AddCartFragment : Fragment() {
                 }
             })
             binding.txtaddmore.setOnClickListener {
-
+                isfirst = false
                 this.requireActivity().onBackPressed()
 
             }
@@ -173,6 +177,9 @@ class AddCartFragment : Fragment() {
         binding.layRoundup.setOnClickListener {
             try {
                 binding.layRoundup.setBackgroundResource(R.drawable.button_dark_orange)
+                binding.layCf2.setBackgroundResource(R.drawable.button_dark_gray)
+                binding.layCf5.setBackgroundResource(R.drawable.button_dark_gray)
+
                 val df = DecimalFormat("#")
                 df.roundingMode = RoundingMode.UP
                 tip = df.format(binding.roundedamount.text.toString().toDouble()).toInt()
@@ -203,12 +210,13 @@ class AddCartFragment : Fragment() {
     }
 
     fun oderConfirm() {
-        var jsonOb = JSONObject()
         var jsonArray = JSONArray()
-        for (item in addcartlist) {
-            jsonOb.put("item_id", item.item_id)
-            jsonOb.put("quantity", item.num_of_unit)
-            jsonOb.put("price", item.price.toInt())
+        for (items in Constants.addcartlist) {
+            var jsonOb = JSONObject()
+            jsonOb.put("item_id", items.item_id)
+            jsonOb.put("item_name", items.name)
+            jsonOb.put("quantity", items.num_of_unit)
+            jsonOb.put("price", items.price.toInt())
             jsonArray.put(jsonOb)
         }
         var amount: Int = viewModel._total.value!!.toInt()
@@ -251,11 +259,25 @@ class AddCartFragment : Fragment() {
         binding.totalPrice1.text = "" + String.format("%.2f", viewModel._total.value)
         binding.roundedamount.text =
             String.format("%.2f", roundOffDecimal(viewModel.sub_total.value!!))
-
+        if (isfirst == false) {
+            val df = DecimalFormat("#")
+            df.roundingMode = RoundingMode.UP
+            tip = df.format((binding.roundedamount.text.toString()).toDouble()).toInt()
+            viewModel._total.value = (tip!! + sub_total.toInt()).toDouble()
+            isfirst = true
+        }
     }
 
     fun roundOffDecimal(number: Double): Double? {
-        val fractional_part = number % 1
+        val df = DecimalFormat("#")
+        df.roundingMode = RoundingMode.UP
+        val up: Double = df.format(number).toDouble()
+        Log.d(TAG, "up=" + up)
+
+        val down: Double = number
+        Log.d(TAG, "down=" + down)
+
+        val fractional_part: Double = (up - down)
         return fractional_part
     }
 
@@ -302,8 +324,8 @@ class AddCartFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -318,12 +340,15 @@ class AddCartFragment : Fragment() {
 
     fun sendResponse(payOrder: PayOrder) {
         try {
-            progressDialog!!.dismiss()
+            progressDialog.dismiss()
 
             if (payOrder.status == 200) {
                 var bundle = Bundle()
                 bundle.putString(Constants.totalamount, binding.totalPrice.text.toString())
-                Constants.stripToken = payOrder.res.stripe_token.toString()
+                Constants.stripToken = payOrder.res.stripe_token
+                paymentIntentClientSecret = payOrder.res.stripe_token
+
+
                 findNavController().navigate(
                     R.id.action_addCartFragment_to_paymentMethodFragment,
                     bundle
@@ -350,81 +375,7 @@ class AddCartFragment : Fragment() {
         }
     }
 
-    private fun setconfirmpayObservers(striptoken: String) {
-        try {
-            viewModel.confirmPay(striptoken)
-                .observe(this.requireActivity(), androidx.lifecycle.Observer {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            com.example.peazy.utility.Status.SUCCESS -> {
 
-                                resource.data?.let { response: Response<VerifyPay> ->
-                                    response.body().let { signUP ->
-                                        signUP?.let { it1 ->
-                                            sendResponseForConfirm(it1)
-                                        }
-                                    }
-                                }
-                                Log.d(
-                                    TAG,
-                                    "Response" + resource.data?.let { response: Response<VerifyPay> ->
-                                        response.body().toString()
-                                    })
-                            }
-                            com.example.peazy.utility.Status.ERROR -> {
-                                try {
-                                    progressDialog!!.dismiss()
-                                    Log.e(TAG, "" + resource.message)
-                                } catch (e: Exception) {
-                                    Log.e(TAG, e.message)
-                                }
-
-                            }
-                            com.example.peazy.utility.Status.LOADING -> {
-                                progressDialog = ProgressDialog(this.requireContext())
-
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
-
-
-                            }
-                        }
-                    }
-                })
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
-        }
-    }
-
-    fun sendResponseForConfirm(verifyPay: VerifyPay) {
-        try {
-            progressDialog!!.dismiss()
-
-            if (verifyPay.status == 200) {
-                var bundle = Bundle()
-                bundle.putString(Constants.totalamount, binding.totalPrice.text.toString())
-                findNavController().navigate(
-                    R.id.action_addCartFragment_to_paymentMethodFragment,
-                    bundle
-                )
-
-
-            } else {
-                val errors = verifyPay.err
-
-                AppUtility.getInstance()
-                    .alertDialogWithSingleButton(
-                        this.requireContext(),
-                        "Error",
-                        "" + errors.msg
-                    )
-            }
-
-
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
-        }
-    }
 
 
     fun showDialog() {
@@ -437,6 +388,12 @@ class AddCartFragment : Fragment() {
         val mAlertDialog = mBuilder.show()
         mDialogView.bt_instruction.setOnClickListener {
             instruction = mDialogView.ed_instruction.text.toString()
+            mAlertDialog.dismiss()
+
+        }
+        mDialogView.in_close.setOnClickListener {
+
+            mAlertDialog.dismiss()
         }
 
     }

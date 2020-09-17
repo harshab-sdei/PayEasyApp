@@ -135,7 +135,7 @@ class EditProfileFragment : Fragment() {
                             }
                             com.example.peazy.utility.Status.ERROR -> {
                                 try {
-                                    progressDialog!!.dismiss()
+                                    progressDialog.dismiss()
                                     Log.e(TAG, "" + resource.message)
                                 } catch (e: Exception) {
                                     Log.e(TAG, e.message)
@@ -145,8 +145,8 @@ class EditProfileFragment : Fragment() {
                             com.example.peazy.utility.Status.LOADING -> {
                                 progressDialog = ProgressDialog(this.requireContext())
 
-                                progressDialog!!.setMessage("loading...")
-                                progressDialog!!.show()
+                                progressDialog.setMessage("loading...")
+                                progressDialog.show()
 
 
                             }
@@ -292,7 +292,7 @@ class EditProfileFragment : Fragment() {
 
         val mAlertDialog = mBuilder.show()
 
-        mDialogView.close.setOnClickListener {
+        mDialogView.in_close.setOnClickListener {
             mAlertDialog.dismiss()
         }
 

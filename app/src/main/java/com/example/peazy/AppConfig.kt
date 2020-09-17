@@ -51,6 +51,7 @@ class AppConfig :Application(){
    }
 
 
+    @SuppressLint("CommitPrefEdits")
     override fun onCreate() {
         super.onCreate()
 
@@ -58,8 +59,8 @@ class AppConfig :Application(){
         try {
             setContext(applicationContext)
             sharedPreferences =
-                applicationContext!!.getSharedPreferences("peazy.txt",Context.MODE_PRIVATE)
-            sharedPreferencesEditor = Companion.sharedPreferences?.edit()
+                applicationContext!!.getSharedPreferences("peazy.txt", Context.MODE_PRIVATE)
+            sharedPreferencesEditor = Companion.sharedPreferences.edit()
         } catch (e: Exception) {
             e.printStackTrace()
         }

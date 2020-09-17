@@ -97,7 +97,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         navView.setNavigationItemSelectedListener {
-            val current = navController.currentDestination!!.id
+            navController.currentDestination!!.id
 
             val id: Int = it.getItemId()
 
@@ -136,11 +136,11 @@ class HomeActivity : AppCompatActivity() {
             // if the dialog is cancelable
             .setCancelable(false)
             // positive button text and action
-            .setPositiveButton("Proceed", DialogInterface.OnClickListener { dialog, which ->
+            .setPositiveButton("Proceed", DialogInterface.OnClickListener { _, _ ->
                 setLogoutObservers()
             })
             // negative button text and action
-            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, _ ->
                 dialog.cancel()
             })
 

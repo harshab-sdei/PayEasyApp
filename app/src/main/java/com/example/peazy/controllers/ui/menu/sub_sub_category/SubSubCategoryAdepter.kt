@@ -1,6 +1,7 @@
 package com.example.peazy.controllers.ui.menu.sub_sub_category
 
 import android.content.Context
+import android.graphics.Rect
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.UnderlineSpan
@@ -46,7 +47,7 @@ class SubSubCategoryAdepter(
         }
 
         holder.bind(subCategory.get(position), clickLister)
-        if (row_index == position) {
+        /*if (row_index == position) {
             with(holder) {
                 view.item_title.setTextColor(view.context.getResources().getColor(R.color.orange))
             }
@@ -54,8 +55,16 @@ class SubSubCategoryAdepter(
             with(holder) {
                 view.item_title.setTextColor(view.context.getResources().getColor(R.color.gray))
             }
-        }
-        val layoutManager = GridLayoutManager(context, 3)
+        }*/
+        val layoutManager = GridLayoutManager(context, 2)
+
+        holder.view.recleview_menuitem!!.addItemDecoration(
+            MySubCategoryHolder.GridSpacingItemDecoration(
+                3,
+                15,
+                false
+            )
+        )
         try {
             if (subCategory.get(position).subItem.size != null || subCategory.get(position).subItem.size > 0) {
                 holder.view.recleview_menuitem!!.setLayoutManager(layoutManager)
@@ -109,16 +118,49 @@ class SubSubCategoryAdepter(
 class MySubCategoryHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(subCategory: Subcategory, clickLister: (Subcategory) -> Unit) {
-        val string = SpannableString(subCategory.name)
-        string.setSpan(
-            UnderlineSpan(),
-            0,
-            subCategory.name.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        view.item_title.text = string
+        /*  val string = SpannableString(subCategory.name)
+          string.setSpan(
+              UnderlineSpan(),
+              0,
+              subCategory.name.length,
+              Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+          )*/
+        view.item_title.text = subCategory.name
 
     }
 
+    class GridSpacingItemDecoration(
+        private val spanCount: Int,
+        private val spacing: Int,
+        private val includeEdge: Boolean
+    ) :
+        RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            val position = parent.getChildAdapterPosition(view) // item position
+            val column = position % spanCount // item column
+            if (includeEdge) {
+                outRect.left =
+                    spacing - column * spacing / spanCount // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right =
+                    (column + 1) * spacing / spanCount // (column + 1) * ((1f / spanCount) * spacing)
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing
+                }
+                outRect.bottom = spacing // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount // column * ((1f / spanCount) * spacing)
+                outRect.right =
+                    spacing - (column + 1) * spacing / spanCount // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing // item top
+                }
+            }
+        }
 
+    }
 }

@@ -141,7 +141,7 @@
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/button_white_fillbox"
                     android:padding="10dp"
-                    android:text="@string/bt_ordermore"
+                    android:text="@string/odernow"
                     android:textColor="@color/orange" />
             </LinearLayout>
         </ScrollView>

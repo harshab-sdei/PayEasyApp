@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:id="@+id/in_close"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="@dimen/_15sdp"

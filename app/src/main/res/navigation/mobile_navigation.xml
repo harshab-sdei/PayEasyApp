@@ -36,6 +36,12 @@
         <action
             android:id="@+id/action_barDetailFragment_to_tableBookMapFragment"
             app:destination="@id/tableBookMapFragment" />
+        <action
+            android:id="@+id/action_barDetailFragment_to_successStatus"
+            app:destination="@id/successStatus" />
+        <action
+            android:id="@+id/action_barDetailFragment_to_barStatus2"
+            app:destination="@id/barStatus" />
     </fragment>
     <fragment
         android:id="@+id/menuFragment"
@@ -58,10 +64,7 @@
         tools:layout="@layout/bar_status_fragment">
         <action
             android:id="@+id/action_barStatus_to_menuFragment"
-            app:destination="@id/menuFragment" />
-        <action
-            android:id="@+id/action_barStatus_to_successStatus"
-            app:destination="@id/successStatus"
+            app:destination="@id/menuFragment"
             app:popUpTo="@+id/barDetailFragment"
             app:popUpToInclusive="true" />
     </fragment>

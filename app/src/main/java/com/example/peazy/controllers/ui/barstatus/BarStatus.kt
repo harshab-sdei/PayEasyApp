@@ -175,20 +175,16 @@ class BarStatus : Fragment() {
 
             if (reserveTable.status == 200) {
 
-                val bundle = Bundle()
-                bundle.putString("tableNo", "" + root!!.table_num.text.toString())
-                val navOptions: NavOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.barDetailFragment, true)
-                    .build()
                 Constants.tableNo = root!!.table_num.text.toString()
+                findNavController().navigate(R.id.action_barStatus_to_menuFragment)
 
                 /*   findNavController().navigate(
                        R.id.action_barStatus_to_successStatus,
                        bundle,
                        navOptions
                    )*/
-                findNavController().navigate(R.id.action_barDetailFragment_to_menuFragment)
 
+                //this.requireActivity().onBackPressed()
 
             } else {
 
@@ -207,5 +203,6 @@ class BarStatus : Fragment() {
             Log.e(TAG, e.message)
         }
     }
+
 
 }

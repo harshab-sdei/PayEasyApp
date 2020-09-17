@@ -13,19 +13,17 @@
         <TextView
             android:id="@+id/item_title"
             style="@style/AppTheme.subtitle"
-            android:background="@color/White"
             android:padding="@dimen/_5sdp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
             android:text="test" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recleview_menuitem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:layout_marginTop="10dp" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
