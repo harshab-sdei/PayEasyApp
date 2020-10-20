@@ -7,7 +7,7 @@
 
         <variable
             name="signup"
-            type="com.example.peazy.controllers.singnup.SignUpViewMode" />
+            type="com.peazyapp.peazy.controllers.singnup.SignUpViewMode" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

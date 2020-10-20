@@ -4,12 +4,12 @@
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
-    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=4E:02:2E:0F:A9:EA:8E:86:C4:58:6A:38:D1:DE:E5:12:A9:8B:F9:43%3Bcom.example.peazy
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=4E:02:2E:0F:A9:EA:8E:86:C4:58:6A:38:D1:DE:E5:12:A9:8B:F9:43%3Bcom.peazyapp.peazy.controllers
 
     You can also add your credentials to an existing key, using these values:
 
     Package name:
-    com.example.peazy
+    com.peazyapp.peazy.controllers
 
     SHA-1 certificate fingerprint:
     4E:02:2E:0F:A9:EA:8E:86:C4:58:6A:38:D1:DE:E5:12:A9:8B:F9:43

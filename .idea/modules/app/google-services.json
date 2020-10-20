@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "658964962677",
+    "firebase_url": "https://peazy-bc1dc.firebaseio.com",
+    "project_id": "peazy-bc1dc",
+    "storage_bucket": "peazy-bc1dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658964962677:android:aefcdd8e55349bcab5873c",
+        "android_client_info": {
+          "package_name": "com.example.peazy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "658964962677-c0ui9tlef7688tu2raijhq1mhub28saj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.peazy",
+            "certificate_hash": "37bdb0da5a64caee12f3f3c9b13ad7f28081a57e"
+          }
+        },
+        {
+          "client_id": "658964962677-94akfor1je4mv320rl82l9d0lernqcph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd95jX7a1CoRym0w3Ta2tQ8uoVHg3NqsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "658964962677-94akfor1je4mv320rl82l9d0lernqcph.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

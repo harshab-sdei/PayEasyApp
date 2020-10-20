@@ -10,6 +10,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
+       // applicationId "com.peazyapp.peazy"
         applicationId "com.example.peazy"
         minSdkVersion 19
         targetSdkVersion 29

@@ -7,14 +7,14 @@
 
         <variable
             name="myorder"
-            type="com.example.peazy.controllers.ui.addcart.ui.main.MainViewModel" />
+            type="com.peazyapp.peazy.controllers.ui.addcart.ui.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.peazy.controllers.ui.addcart.ui.main.AddCartFragment">
+        tools:context="com.peazyapp.peazy.controllers.ui.addcart.ui.main.AddCartFragment">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -118,7 +118,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent">
-
 
             <LinearLayout
                 android:id="@+id/bottom_sheet"

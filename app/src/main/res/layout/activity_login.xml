@@ -6,7 +6,7 @@
     <data>
         <variable
             name="login"
-            type="com.example.peazy.controllers.login.LoginModelView" />
+            type="com.peazyapp.peazy.controllers.login.LoginModelView" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

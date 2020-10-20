@@ -67,10 +67,11 @@
                         android:text="15" />
 
                     <TextView
-                        android:layout_marginTop="@dimen/margin_15"
+                        android:layout_marginTop="@dimen/_10sdp"
                         style="@style/AppTheme.textsize_16sp"
                         android:textColor="@color/White"
                         android:gravity="bottom"
+                        android:layout_marginBottom="@dimen/_2sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="min" />
@@ -81,7 +82,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="bottom"
                     android:gravity="bottom"
-                    android:layout_marginBottom="@dimen/margin_15"
+                    android:layout_marginBottom="@dimen/_10sdp"
                     android:orientation="vertical">
 
                     <Button
